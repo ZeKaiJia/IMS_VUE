@@ -1,24 +1,19 @@
-# vue_ims
+# 信息管理系统前端 IMS-VUE
 
-## Project setup
-```
-yarn install
-```
+## 说明
+后端项目基本已经完成，当然一些拦截器、跨域问题等还有待修复。使用 Postman 测试接口可视化效果不强，所以希望能写一个前端项目，今后与后端项目一起部署到服务器上投入使用。 <br>
+2020.6.10开始更新本项目的开发日志.
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+## 层次结构
+assets -> 资源包 <br>
+components -> 组件 <br>
+plugins -> 插件 <br>
+router -> 路由 <br>
+views -> 视图 <br>
+App.vue -> 入口 <br>
+main.js -> 主配置 <br>
 
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 开发日志
+### 2020.6.10 - Demo 0.0.1
+<li>已知问题: 由于没有解决前后端跨域问题，目前前后端资源被屏蔽，不能够互相访问</li>
+<li>初步完成了 Login 组件</li>
