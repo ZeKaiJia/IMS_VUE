@@ -1,6 +1,8 @@
 {
   "name": "vue_ims",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "IMS VUE PROJECT",
+  "author": "Kevin",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -28,6 +30,8 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
+    "less": "^3.11.3",
+    "less-loader": "^6.1.0",
     "vue-cli-plugin-element": "^1.0.1",
     "vue-template-compiler": "^2.6.11"
   }
