@@ -56,6 +56,7 @@ export default {
       this.$refs.loginFormRef.resetFields()
     },
     submitLoginForm () {
+      // BUG
       this.$refs.loginFormRef.validate(async valid => {
         await this.$router.push('/home')
         // eslint-disable-next-line no-constant-condition
