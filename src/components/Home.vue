@@ -11,12 +11,17 @@
     <!--页面主体区域-->
     <el-container>
       <!--侧边栏区域-->
-      <el-aside width="200px">
+      <el-aside :width="isCollapse ? '64px' : '200px'">
+        <div class="toggle-button" @click="toggleCollapse">|||</div>
         <!--侧边栏菜单区域-->
         <el-menu
           background-color="#203a57"
           text-color="#fff"
           active-text-color="#38ae70"
+          :router="true"
+          :collapse="isCollapse"
+          :unique-opened="true"
+          :collapse-transition="false"
         >
           <!--一级菜单-->
           <el-submenu
@@ -33,7 +38,7 @@
             </template>
             <!--二级菜单-->
             <el-menu-item
-              :index="subItem.id + ''"
+              :index="'/' + subItem.path"
               v-for="subItem in item.children"
               :key="subItem.id"
             >
@@ -48,7 +53,10 @@
         </el-menu>
       </el-aside>
       <!--侧边栏右侧区域-->
-      <el-main>Main</el-main>
+      <el-main>
+        <!--路由占位符-->
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -61,7 +69,7 @@ export default {
         {
           id: 1,
           authName: '用户管理',
-          children: [{ id: 11, authName: '用户列表' }]
+          children: [{ id: 11, authName: '用户列表', path: 'users' }]
         },
         {
           id: 2,
@@ -99,7 +107,9 @@ export default {
         4: 'iconfont icon-icon-test37',
         5: 'iconfont icon-icon-test31',
         6: 'iconfont icon-icon-test29'
-      }
+      },
+      // 默认不折叠
+      isCollapse: false
     }
   },
   created() {
@@ -116,6 +126,9 @@ export default {
       const { date: res } = await this.$http.get('menus')
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.menulist = res.data
+    },
+    toggleCollapse() {
+      this.isCollapse = !this.isCollapse
     }
   }
 }
@@ -147,11 +160,23 @@ export default {
 }
 .el-aside {
   background-color: #203a57;
+  .el-menu {
+    border-right: 0;
+  }
 }
 .el-main {
   background-color: ghostwhite;
 }
 .iconfont {
   margin-right: 22px;
+}
+.toggle-button {
+  background-color: #374a5d;
+  font-size: 10px;
+  line-height: 24px;
+  color: white;
+  text-align: center;
+  letter-spacing: 0.2em;
+  cursor: pointer;
 }
 </style>
