@@ -22,6 +22,7 @@
           :collapse="isCollapse"
           :unique-opened="true"
           :collapse-transition="false"
+          :default-active="activePath"
         >
           <!--一级菜单-->
           <el-submenu
@@ -41,6 +42,7 @@
               :index="'/' + subItem.path"
               v-for="subItem in item.children"
               :key="subItem.id"
+              @click="saveNavState('/' + subItem.path)"
             >
               <template slot="title">
                 <!--图标-->
@@ -75,8 +77,8 @@ export default {
           id: 2,
           authName: '权限管理',
           children: [
-            { id: 21, authName: '角色列表' },
-            { id: 22, authName: '权限列表' }
+            { id: 21, authName: '角色列表', path: 'userType' },
+            { id: 22, authName: '权限列表', path: 'userAss' }
           ]
         },
         {
@@ -109,11 +111,14 @@ export default {
         6: 'iconfont icon-icon-test29'
       },
       // 默认不折叠
-      isCollapse: false
+      isCollapse: false,
+      // 被激活的地址
+      activePath: ''
     }
   },
   created() {
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   name: 'Home',
   methods: {
@@ -129,6 +134,10 @@ export default {
     },
     toggleCollapse() {
       this.isCollapse = !this.isCollapse
+    },
+    saveNavState(activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
   }
 }
