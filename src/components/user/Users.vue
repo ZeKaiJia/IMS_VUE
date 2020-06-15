@@ -8,14 +8,47 @@
     </el-breadcrumb>
     <!--卡片视图区-->
     <el-card>
-      123
+      <!--搜索与添加区域-->
+      <el-row :gutter="20">
+        <el-col :span="8">
+          <el-input placeholder="请输入内容">
+            <el-button slot="append" icon="el-icon-search" />
+          </el-input>
+        </el-col>
+        <el-col :span="4">
+          <el-button type="primary">添加用户</el-button>
+        </el-col>
+      </el-row>
     </el-card>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Users'
+  name: 'Users',
+  data() {
+    return {
+      // 获取用户列表的参数对象
+      queryInfo: {
+        query: '',
+        pageNum: 1,
+        pageSize: 2
+      }
+    }
+  },
+  created() {
+    this.getUserList()
+  },
+  methods: {
+    async getUserList() {
+      const { data: res } = await this.$http.get('users', {
+        params: this.queryInfo
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取用户列表失败!')
+      }
+    }
+  }
 }
 </script>
 
