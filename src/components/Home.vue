@@ -76,10 +76,7 @@ export default {
         {
           id: 2,
           authName: '权限管理',
-          children: [
-            { id: 21, authName: '角色列表', path: 'userType' },
-            { id: 22, authName: '权限列表', path: 'userAss' }
-          ]
+          children: [{ id: 21, authName: '角色列表', path: 'userType' }]
         },
         {
           id: 3,
@@ -128,9 +125,10 @@ export default {
     },
     // 获取所有的菜单
     async getMenuList() {
-      const { date: res } = await this.$http.get('menus')
-      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-      this.menulist = res.data
+      // const { data: res } = await this.$http.get('login/menus')
+      // if (res.code !== 200) return this.$message.error(res.message)
+      // this.menulist = res.data
+      // console.log(this.menulist)
     },
     toggleCollapse() {
       this.isCollapse = !this.isCollapse

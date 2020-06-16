@@ -74,15 +74,15 @@ export default {
       this.$refs.loginFormRef.validate(async (valid) => {
         await this.$router.push('/home')
         // eslint-disable-next-line no-constant-condition
-        return this.$message.error('前后端跨域问题未解决,无法验证用户信息')
+        // return this.$message.error('前后端跨域问题未解决,无法验证用户信息')
         // eslint-disable-next-line no-useless-return,no-unreachable
         if (!valid) return
         // eslint-disable-next-line
-        const { date: result } = await this.$http.post(
+        const { data: result } = await this.$http.post(
           'login/login',
           this.loginForm
         )
-        window.sessionStorage.setItem('token', result.data.token)
+        window.sessionStorage.setItem('token', result.data.utcCreate)
       })
     }
   }
