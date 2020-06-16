@@ -1,34 +1,47 @@
 /*全局样式表*/
-html, body, #app {
-    height: 100%;
-    margin: 0;
-    padding: 0;
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 input:-webkit-autofill {
-    -webkit-text-fill-color: #acfff2 !important;/*记住密码的字的颜色*/
-    transition: background-color 5000s ease-in-out 0s;/*延时渲染背景色来去除背景色*/
-    caret-color: #acfff2;/*光标颜色*/
+  -webkit-text-fill-color: #acfff2 !important; /*记住密码的字的颜色*/
+  transition: background-color 5000s ease-in-out 0s; /*延时渲染背景色来去除背景色*/
+  caret-color: #acfff2; /*光标颜色*/
 }
 
-input:focus {  /*外边框线去除*/
-    outline: none;
+input:focus {
+  /*外边框线去除*/
+  outline: none;
 }
 
 .el-form-item__error {
-    color: #F56C6C;
-    font-size: 12px;
-    line-height: 1;
-    padding-top: 4px;
-    position: absolute;
-    top: 116%;
-    left: 140px;
+  color: #f56c6c;
+  font-size: 12px;
+  line-height: 1;
+  padding-top: 4px;
+  position: absolute;
+  top: 116%;
+  left: 140px;
 }
 
 .el-breadcrumb {
-    margin-bottom: 15px;
-    font-size: 12px;
+  margin-bottom: 15px;
+  font-size: 12px;
 }
 
 .el-card {
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
+}
+
+.el-table {
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.el-pagination {
+  margin-top: 15px;
+  text-align: center;
 }

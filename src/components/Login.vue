@@ -72,17 +72,18 @@ export default {
     submitLoginForm() {
       // BUG
       this.$refs.loginFormRef.validate(async (valid) => {
-        await this.$router.push('/home')
-        // eslint-disable-next-line no-constant-condition
-        // return this.$message.error('前后端跨域问题未解决,无法验证用户信息')
-        // eslint-disable-next-line no-useless-return,no-unreachable
-        if (!valid) return
+        if (!valid) return this.$message.error('出错啦，再试一次')
         // eslint-disable-next-line
         const { data: result } = await this.$http.post(
           'login/login',
           this.loginForm
         )
-        window.sessionStorage.setItem('token', result.data.utcCreate)
+        if (result.code !== 200) {
+          return this.$message.error('用户名或密码错误，请重试')
+        } else {
+          await this.$router.push('/home')
+          window.sessionStorage.setItem('token', result.data.utcCreate)
+        }
       })
     }
   }

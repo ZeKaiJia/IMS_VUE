@@ -57,7 +57,7 @@
       <!--侧边栏右侧区域-->
       <el-main>
         <!--路由占位符-->
-        <router-view></router-view>
+        <router-view/>
       </el-main>
     </el-container>
   </el-container>
@@ -127,8 +127,9 @@ export default {
     async getMenuList() {
       // const { data: res } = await this.$http.get('login/menus')
       // if (res.code !== 200) return this.$message.error(res.message)
-      // this.menulist = res.data
-      // console.log(this.menulist)
+      // // const resData = JSON.parse(JSON.stringify(res))
+      // this.menuList = res.data
+      // console.log(res)
     },
     toggleCollapse() {
       this.isCollapse = !this.isCollapse
