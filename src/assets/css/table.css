@@ -1,0 +1,16 @@
+.el-table .warning-row {
+    background: oldlace;
+}
+
+.el-table .success-row {
+    background: #f0f9eb;
+}
+.el-table .admin-row {
+    background: rgba(255, 102, 102, 0.15);
+}
+.el-table .stu-row {
+    background: #ffffff;
+}
+.el-table .tea-row {
+    background: rgba(237, 253, 177, 0.5);
+}

@@ -56,11 +56,11 @@ export default {
       loginFormRules: {
         usrId: [
           { required: true, message: '请输入用户ID', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在3到5个字符', trigger: 'blur' }
+          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
         ],
         usrPassword: [
           { required: true, message: '请输入用户密码', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在3到5个字符', trigger: 'blur' }
+          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
         ]
       }
     }
@@ -153,5 +153,14 @@ export default {
     margin-top: 30px;
     text-align: center;
   }
+}
+.el-form-item__error {
+  color: #f56c6c;
+  font-size: 12px;
+  line-height: 1;
+  padding-top: 4px;
+  position: absolute;
+  top: 116%;
+  left: 140px;
 }
 </style>

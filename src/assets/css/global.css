@@ -17,16 +17,6 @@ input:focus {
   outline: none;
 }
 
-.el-form-item__error {
-  color: #f56c6c;
-  font-size: 12px;
-  line-height: 1;
-  padding-top: 4px;
-  position: absolute;
-  top: 116%;
-  left: 140px;
-}
-
 .el-breadcrumb {
   margin-bottom: 15px;
   font-size: 12px;

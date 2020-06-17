@@ -11,16 +11,27 @@
       <!--搜索与添加区域-->
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search" />
+          <el-input
+            placeholder="请输入内容"
+            v-model="queryInfo.usrId"
+            @clear="getUserList"
+            clearable
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="selectUser"
+            />
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary">添加用户</el-button>
+          <el-button type="primary" @click="addDialogVisible = true"
+            >添加用户</el-button
+          >
         </el-col>
       </el-row>
       <!--用户列表区域-->
-      <el-table :data="userList" border stripe>
+      <el-table :data="userList" :row-class-name="tableRowClassName" border>
         <el-table-column type="index" label="序号" />
         <el-table-column label="用户名" prop="usrId" />
         <el-table-column label="密码" prop="usrPassword" />
@@ -71,18 +82,44 @@
         </el-table-column>
       </el-table>
       <!--分页区域-->
+      <!--@size-change="handleSizeChange"-->
+      <!--@current-change="handleCurrentChange"-->
+      <!--:current-page="queryInfo.pageNum"-->
+      <!--:page-sizes="[1, 2, 5, 10]"-->
+      <!--:page-size="queryInfo.pageSize"-->
       <!--total, sizes, prev, pager, next, jumper-->
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="queryInfo.pageNum"
-        :page-sizes="[1, 2, 5, 10]"
-        :page-size="queryInfo.pageSize"
-        layout="total"
-        :total="total"
-      >
-      </el-pagination>
+      <el-pagination layout="total" :total="total"> </el-pagination>
     </el-card>
+    <!--添加用户的对话框-->
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
+      <!--内容主题区域-->
+      <el-form
+        :model="addForm"
+        :rules="addFormRules"
+        ref="addFormRef"
+        label-width="70px"
+      >
+        <el-form-item label="ID" prop="usrId">
+          <el-input v-model="addForm.usrId" />
+        </el-form-item>
+        <el-form-item label="密码" prop="usrPassword">
+          <el-input v-model="addForm.usrPassword" />
+        </el-form-item>
+        <el-form-item label="角色" prop="usrType">
+          <el-input v-model="addForm.usrType" />
+        </el-form-item>
+      </el-form>
+      <!--底部按钮区-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">添 加</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -90,15 +127,59 @@
 export default {
   name: 'Users',
   data() {
+    // // 验证邮箱
+    // var checkEmail = (rule, value, callback) => {
+    //   const regEmail = /^([a-zA-z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
+    //   if (regEmail.test(value)) {
+    //     return callback()
+    //   } else {
+    //     callback(new Error('请输入合法的邮箱'))
+    //   }
+    // }
+    // // 验证手机号
+    // var checkMobile = (rule, value, callback) => {
+    //   const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+    //   if (regMobile.test(value)) {
+    //     return callback()
+    //   } else {
+    //     callback(new Error('请输入合法的手机号'))
+    //   }
+    // }
     return {
       // 获取用户列表的参数对象
       queryInfo: {
-        query: '',
-        pageNum: 1,
-        pageSize: 2
+        usrId: ''
       },
       userList: [],
-      total: 0
+      total: 0,
+      // 控制添加用户对话框的显示
+      addDialogVisible: false,
+      // 添加用户的表单数据
+      addForm: {
+        usrId: '',
+        usrPassword: '',
+        usrType: ''
+      },
+      // 添加表单的验证规则对象
+      addFormRules: {
+        usrId: [
+          { required: true, message: '请输入用户ID', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+        ],
+        usrPassword: [
+          { required: true, message: '请输入用户密码', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+        ],
+        usrType: [
+          { required: true, message: '请输入用户角色类型', trigger: 'blur' },
+          {
+            type: 'enum',
+            enum: ['管理员', '教师', '学生'],
+            message: '角色类型必须为管理员、教师或学生',
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   created() {
@@ -106,7 +187,21 @@ export default {
   },
   methods: {
     async getUserList() {
-      const { data: res } = await this.$http.get('login/selectAdmin', {
+      const { data: res } = await this.$http.get('login/selectAdmin')
+      if (res.code !== 200) {
+        return this.$message.error('获取用户列表失败!')
+      }
+      for (let i = 0; i < res.data.length; i++) {
+        res.data[i].utcCreate = this.timestampToTime(res.data[i].utcCreate)
+        res.data[i].lastLogin = this.timestampToTime(res.data[i].lastLogin)
+      }
+      this.userList = res.data
+      this.total = res.data.length
+      console.log(this.userList)
+    },
+    async selectUser() {
+      console.log(this.queryInfo)
+      const { data: res } = await this.$http.get('login/selectAdminById', {
         params: this.queryInfo
       })
       if (res.code !== 200) {
@@ -118,7 +213,6 @@ export default {
       }
       this.userList = res.data
       this.total = res.data.length
-      console.log(this.userList)
     },
     timestampToTime(timestamp) {
       const date = new Date(timestamp)
@@ -164,9 +258,53 @@ export default {
           return this.$message.success('开启用户权限成功')
         }
       }
+    },
+    // 监听添加用户对话框的关闭事件
+    addDialogClosed() {
+      this.$refs.addFormRef.resetFields()
+    },
+    // 点击按钮添加新用户
+    addUser() {
+      this.$refs.addFormRef.validate(async (valid) => {
+        if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
+        const { data: res } = await this.$http.post(
+          'login/insert',
+          this.addForm
+        )
+        if (res.code !== 200) {
+          this.addDialogVisible = false
+          return this.$message.error('ID已存在，添加用户失败')
+        } else {
+          this.addDialogVisible = false
+          this.$message.success('添加用户成功')
+        }
+        this.getUserList()
+      })
+    },
+    // 凸显身份识别
+    tableRowClassName({ row, rowIndex }) {
+      if (row.usrType === '管理员') {
+        return 'admin-row'
+      } else if (row.usrType === '学生') {
+        return 'stu-row'
+      } else if (row.usrType === '教师') {
+        return 'tea-row'
+      }
+      return ''
     }
   }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+@import '../../assets/css/table.css';
+.el-form-item__error {
+  color: #f56c6c;
+  font-size: 12px;
+  line-height: 1;
+  padding-top: 4px;
+  position: absolute;
+  top: 116%;
+  left: 0;
+}
+</style>
