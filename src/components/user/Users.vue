@@ -32,13 +32,14 @@
       </el-row>
       <!--用户列表区域-->
       <el-table :data="userList" :row-class-name="tableRowClassName" border>
-        <el-table-column type="index" label="序号" />
-        <el-table-column label="用户名" prop="usrId" />
-        <el-table-column label="密码" prop="usrPassword" />
-        <el-table-column label="角色" prop="usrType" />
+        <el-table-column type="index" label="序号" width="38px" />
+        <el-table-column label="用户名" prop="usrId" width="100px" />
+        <el-table-column label="密码" prop="usrPassword" width="100px" />
+        <el-table-column label="角色" prop="usrType" width="80px" />
         <el-table-column label="创建时间" prop="utcCreate" />
+        <el-table-column label="修改时间" prop="utcModify" />
         <el-table-column label="最近登录时间" prop="lastLogin" />
-        <el-table-column label="状态">
+        <el-table-column label="状态" width="150px">
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.isReal"
@@ -51,8 +52,8 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
-          <template slot-scope="">
+        <el-table-column label="操作" width="130px">
+          <template slot-scope="scope">
             <el-tooltip
               class="dark"
               effect="dark"
@@ -61,7 +62,14 @@
               :enterable="false"
               :hide-after="2000"
             >
-              <el-button type="primary" icon="el-icon-edit" size="mini" round />
+              <!--修改按钮-->
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="showEditDialog(scope.row.usrId)"
+                round
+              />
             </el-tooltip>
             <el-tooltip
               class="dark"
@@ -71,10 +79,12 @@
               :enterable="false"
               :hide-after="2000"
             >
+              <!--删除按钮-->
               <el-button
                 type="danger"
                 icon="el-icon-delete"
                 size="mini"
+                @click="removeUserById(scope.row.usrId)"
                 round
               />
             </el-tooltip>
@@ -120,6 +130,36 @@
         <el-button type="primary" @click="addUser">添 加</el-button>
       </span>
     </el-dialog>
+    <!--修改用户的对话框-->
+    <el-dialog
+      title="修改用户"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="editDialogClosed"
+    >
+      <!--内容主题区域-->
+      <el-form
+        :model="editForm"
+        :rules="addFormRules"
+        ref="editFormRef"
+        label-width="70px"
+      >
+        <el-form-item label="ID" prop="usrId">
+          <el-input v-model="editForm.usrId" disabled />
+        </el-form-item>
+        <el-form-item label="密码" prop="usrPassword">
+          <el-input v-model="editForm.usrPassword" />
+        </el-form-item>
+        <el-form-item label="角色" prop="usrType">
+          <el-input v-model="editForm.usrType" />
+        </el-form-item>
+      </el-form>
+      <!--底部按钮区-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editUser">修 改</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -154,8 +194,16 @@ export default {
       total: 0,
       // 控制添加用户对话框的显示
       addDialogVisible: false,
+      // 控制修改用户对话框的显示
+      editDialogVisible: false,
       // 添加用户的表单数据
       addForm: {
+        usrId: '',
+        usrPassword: '',
+        usrType: ''
+      },
+      // 查询用户的表单数据
+      editForm: {
         usrId: '',
         usrPassword: '',
         usrType: ''
@@ -193,7 +241,11 @@ export default {
       }
       for (let i = 0; i < res.data.length; i++) {
         res.data[i].utcCreate = this.timestampToTime(res.data[i].utcCreate)
-        res.data[i].lastLogin = this.timestampToTime(res.data[i].lastLogin)
+        res.data[i].utcModify = this.timestampToTime(res.data[i].utcModify)
+        res.data[i].lastLogin =
+          res.data[i].lastLogin > 31539467000
+            ? this.timestampToTime(res.data[i].lastLogin)
+            : '新用户'
       }
       this.userList = res.data
       this.total = res.data.length
@@ -209,7 +261,11 @@ export default {
       }
       for (let i = 0; i < res.data.length; i++) {
         res.data[i].utcCreate = this.timestampToTime(res.data[i].utcCreate)
-        res.data[i].lastLogin = this.timestampToTime(res.data[i].lastLogin)
+        res.data[i].utcModify = this.timestampToTime(res.data[i].utcModify)
+        res.data[i].lastLogin =
+          res.data[i].lastLogin > 31539467000
+            ? this.timestampToTime(res.data[i].lastLogin)
+            : '新用户'
       }
       this.userList = res.data
       this.total = res.data.length
@@ -221,10 +277,20 @@ export default {
         (date.getMonth() + 1 < 10
           ? '0' + (date.getMonth() + 1)
           : date.getMonth() + 1) + '-'
-      const D = date.getDate() + ' '
-      const h = date.getHours() + ':'
-      const m = date.getMinutes() + ':'
-      const s = date.getSeconds()
+      const D =
+        date.getDate() < 10 ? '0' + date.getDate() + ' ' : date.getDate() + ' '
+      const h =
+        date.getHours() < 10
+          ? '0' + date.getHours() + ':'
+          : date.getHours() + ':'
+      const m =
+        date.getMinutes() < 10
+          ? '0' + date.getMinutes() + ':'
+          : date.getMinutes() + ':'
+      const s =
+        date.getSeconds() < 10
+          ? '0' + date.getSeconds()
+          : date.getSeconds() + ''
       return Y + M + D + h + m + s
     },
     // 监听 pagesize 改变的事件
@@ -244,24 +310,29 @@ export default {
           `login/delete?usrId=${userInfo.usrId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('关闭用户权限失败')
+          return this.$message.error('禁用用户失败')
         } else {
-          return this.$message.success('关闭用户权限成功')
+          this.getUserList()
+          return this.$message.success('禁用用户成功')
         }
       } else {
         const { data: res } = await this.$http.post(
           `login/redelete?usrId=${userInfo.usrId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启用户权限失败')
+          return this.$message.error('开启用户失败')
         } else {
-          return this.$message.success('开启用户权限成功')
+          this.getUserList()
+          return this.$message.success('开启用户成功')
         }
       }
     },
     // 监听添加用户对话框的关闭事件
     addDialogClosed() {
       this.$refs.addFormRef.resetFields()
+    },
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
     },
     // 点击按钮添加新用户
     addUser() {
@@ -281,6 +352,49 @@ export default {
         this.getUserList()
       })
     },
+    // 点击按钮修改用户信息
+    editUser() {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
+        const { data: res } = await this.$http.post(
+          'login/update',
+          this.editForm
+        )
+        console.log(res)
+        if (res.code !== 200) {
+          this.editDialogVisible = false
+          return this.$message.error('修改用户失败')
+        } else {
+          this.editDialogVisible = false
+          this.$message.success('修改用户成功')
+        }
+        this.getUserList()
+      })
+    },
+    // 点击按钮删除用户信息
+    async removeUserById(usrId) {
+      // 弹框询问
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该用户, 是否继续?',
+        '⚠️警告',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch((err) => err)
+      // 取消操作返回cancel字符串
+      // 确认操作返回confirm字符串
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已撤回删除操作')
+      }
+      const { data: res } = await this.$http.post(`login/save?usrId=${usrId}`)
+      if (res.code !== 200) {
+        return this.$message.error('删除用户失败')
+      }
+      this.$message.success('删除用户成功')
+      this.getUserList()
+    },
     // 凸显身份识别
     tableRowClassName({ row, rowIndex }) {
       if (row.usrType === '管理员') {
@@ -291,6 +405,18 @@ export default {
         return 'tea-row'
       }
       return ''
+    },
+    // 监听添加用户对话框的点击事件
+    async showEditDialog(usrId) {
+      const { data: res } = await this.$http.get(
+        `login/selectAdminById?usrId=${usrId}`
+      )
+      if (res.code !== 200) {
+        return this.$message.error('查询用户信息失败')
+      }
+      this.editForm = res.data[0]
+      this.editDialogVisible = true
+      console.log(this.editForm)
     }
   }
 }
