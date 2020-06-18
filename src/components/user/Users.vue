@@ -33,12 +33,12 @@
       <!--用户列表区域-->
       <el-table :data="userList" :row-class-name="tableRowClassName" border>
         <el-table-column type="index" label="序号" width="38px" />
-        <el-table-column label="用户名" prop="usrId" width="100px" />
-        <el-table-column label="密码" prop="usrPassword" width="100px" />
+        <el-table-column label="用户名" prop="usrId" />
+        <el-table-column label="密码" prop="usrPassword" />
         <el-table-column label="角色" prop="usrType" width="80px" />
-        <el-table-column label="创建时间" prop="utcCreate" />
-        <el-table-column label="修改时间" prop="utcModify" />
-        <el-table-column label="最近登录时间" prop="lastLogin" />
+        <el-table-column label="创建时间" prop="utcCreate" width="190px" />
+        <el-table-column label="修改时间" prop="utcModify" width="190px" />
+        <el-table-column label="最近登录时间" prop="lastLogin" width="190px" />
         <el-table-column label="状态" width="150px">
           <template slot-scope="scope">
             <el-switch
@@ -249,10 +249,8 @@ export default {
       }
       this.userList = res.data
       this.total = res.data.length
-      console.log(this.userList)
     },
     async selectUser() {
-      console.log(this.queryInfo)
       const { data: res } = await this.$http.get('login/selectAdminById', {
         params: this.queryInfo
       })
@@ -355,18 +353,19 @@ export default {
     // 点击按钮修改用户信息
     editUser() {
       this.$refs.editFormRef.validate(async (valid) => {
+        console.log(this.editForm.usrType)
         if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
         const { data: res } = await this.$http.post(
           'login/update',
           this.editForm
         )
-        console.log(res)
         if (res.code !== 200) {
           this.editDialogVisible = false
           return this.$message.error('修改用户失败')
         } else {
           this.editDialogVisible = false
           this.$message.success('修改用户成功')
+          console.log(res)
         }
         this.getUserList()
       })
@@ -414,9 +413,8 @@ export default {
       if (res.code !== 200) {
         return this.$message.error('查询用户信息失败')
       }
-      this.editForm = res.data[0]
+      this.editForm = res.data
       this.editDialogVisible = true
-      console.log(this.editForm)
     }
   }
 }

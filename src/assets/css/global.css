@@ -5,6 +5,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  min-width: 880px;
 }
 input:-webkit-autofill {
   -webkit-text-fill-color: #acfff2 !important; /*记住密码的字的颜色*/

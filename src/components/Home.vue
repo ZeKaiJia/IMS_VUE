@@ -57,7 +57,7 @@
       <!--侧边栏右侧区域-->
       <el-main>
         <!--路由占位符-->
-        <router-view/>
+        <router-view />
       </el-main>
     </el-container>
   </el-container>
@@ -76,7 +76,10 @@ export default {
         {
           id: 2,
           authName: '权限管理',
-          children: [{ id: 21, authName: '角色列表', path: 'userType' }]
+          children: [
+            { id: 21, authName: '角色列表', path: 'type' },
+            { id: 22, authName: '权限列表', path: 'rights' }
+          ]
         },
         {
           id: 3,
