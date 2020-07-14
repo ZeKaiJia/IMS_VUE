@@ -257,15 +257,14 @@ export default {
       if (res.code !== 200) {
         return this.$message.error('获取用户列表失败!')
       }
-      for (let i = 0; i < res.data.length; i++) {
-        res.data[i].utcCreate = this.timestampToTime(res.data[i].utcCreate)
-        res.data[i].utcModify = this.timestampToTime(res.data[i].utcModify)
-        res.data[i].lastLogin =
-          res.data[i].lastLogin > 31539467000
-            ? this.timestampToTime(res.data[i].lastLogin)
-            : '新用户'
-      }
-      this.userList = res.data
+      this.userList = []
+      this.userList.push(res.data)
+      this.userList[0].utcCreate = this.timestampToTime(this.userList[0].utcCreate)
+      this.userList[0].utcModify = this.timestampToTime(this.userList[0].utcModify)
+      this.userList[0].lastLogin =
+        this.userList[0].lastLogin > 31539467000
+          ? this.timestampToTime(this.userList[0].lastLogin)
+          : '新用户'
       this.total = res.data.length
     },
     timestampToTime(timestamp) {

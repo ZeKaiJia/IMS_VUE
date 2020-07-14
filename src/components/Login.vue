@@ -154,7 +154,7 @@ export default {
     text-align: center;
   }
 }
-.el-form-item__error {
+z.el-form-item__error {
   color: #f56c6c;
   font-size: 12px;
   line-height: 1;

@@ -77,29 +77,45 @@ export default {
           id: 2,
           authName: '权限管理',
           children: [
-            { id: 21, authName: '角色列表', path: 'type' },
+            { id: 21, authName: '角色列表', path: 'types' },
             { id: 22, authName: '权限列表', path: 'rights' }
           ]
         },
         {
           id: 3,
           authName: '学生管理',
-          children: [{ id: 31, authName: '学生列表' }]
+          children: [{
+            id: 31,
+            authName: '学生列表',
+            path: 'students'
+          }]
         },
         {
           id: 4,
           authName: '教师管理',
-          children: [{ id: 41, authName: '教师列表' }]
+          children: [{
+            id: 41,
+            authName: '教师列表',
+            path: 'teachers'
+          }]
         },
         {
           id: 5,
           authName: '课程管理',
-          children: [{ id: 51, authName: '课程列表' }]
+          children: [{
+            id: 51,
+            authName: '课程列表',
+            path: 'lessons'
+          }]
         },
         {
           id: 6,
           authName: '数据统计',
-          children: [{ id: 61, authName: '综合数据' }]
+          children: [{
+            id: 61,
+            authName: '综合数据',
+            path: 'status'
+          }]
         }
       ],
       iconsObj: {
