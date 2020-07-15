@@ -18,7 +18,7 @@
         <el-table-column type="index" label="#" width="48px" align="center"/>
         <el-table-column label="权限名称" prop="authName" align="center"/>
         <el-table-column label="路径名称" prop="path" align="center"/>
-        <el-table-column label="权限登记" prop="level" align="center">
+        <el-table-column label="权限等级" prop="level" align="center">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.level === '0'">一级</el-tag>
             <el-tag type="success" v-else-if="scope.row.level === '1'">二级</el-tag>

@@ -6,6 +6,7 @@ import Welcome from '../components/Welcome'
 import Users from '../components/user/Users'
 import Rights from '../components/power/Rights'
 import Types from '../components/power/Types'
+import Student from '../components/student/Student'
 
 Vue.use(Router)
 
@@ -22,7 +23,8 @@ const router = new Router({
         { path: '/welcome', component: Welcome },
         { path: '/users', component: Users },
         { path: '/rights', component: Rights },
-        { path: '/types', component: Types }
+        { path: '/types', component: Types },
+        { path: '/students', component: Student }
       ]
     }
   ]

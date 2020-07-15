@@ -24,22 +24,30 @@
             />
           </el-input>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="2.5">
           <el-button type="primary" @click="addDialogVisible = true"
             >添加用户</el-button
           >
         </el-col>
+        <el-col :span="11">
+          <el-alert
+            title="请勿将所有用户的状态关闭，这将导致用户无法登录系统"
+            style="min-width: 500px; max-width: 500px"
+            type="warning"
+            show-icon>
+          </el-alert>
+        </el-col>
       </el-row>
       <!--用户列表区域-->
       <el-table :data="userList" :row-class-name="tableRowClassName" border>
-        <el-table-column type="index" label="序号" width="38px" />
-        <el-table-column label="用户名" prop="usrId" />
-        <el-table-column label="密码" prop="usrPassword" />
-        <el-table-column label="角色" prop="usrType" width="80px" />
-        <el-table-column label="创建时间" prop="utcCreate" width="190px" />
-        <el-table-column label="修改时间" prop="utcModify" width="190px" />
-        <el-table-column label="最近登录时间" prop="lastLogin" width="190px" />
-        <el-table-column label="状态" width="150px">
+        <el-table-column type="index" label="序号" width="38px" align="center"/>
+        <el-table-column label="用户名" prop="usrId" align="center"/>
+        <el-table-column label="密码" prop="usrPassword" align="center"/>
+        <el-table-column label="角色" prop="usrType" width="78px" align="center"/>
+        <el-table-column label="创建时间" prop="utcCreate" width="190px" align="center"/>
+        <el-table-column label="修改时间" prop="utcModify" width="190px" align="center"/>
+        <el-table-column label="最近登录时间" prop="lastLogin" width="190px" align="center"/>
+        <el-table-column label="状态" width="148px" align="center">
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.isReal"
@@ -52,7 +60,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="130px">
+        <el-table-column label="操作" width="128px" align="center">
           <template slot-scope="scope">
             <el-tooltip
               class="dark"
@@ -164,6 +172,7 @@
 </template>
 
 <script>
+import { timestampToTime } from '../../plugins/utils'
 export default {
   name: 'Users',
   data() {
@@ -240,11 +249,11 @@ export default {
         return this.$message.error('获取用户列表失败!')
       }
       for (let i = 0; i < res.data.length; i++) {
-        res.data[i].utcCreate = this.timestampToTime(res.data[i].utcCreate)
-        res.data[i].utcModify = this.timestampToTime(res.data[i].utcModify)
+        res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
+        res.data[i].utcModify = timestampToTime(res.data[i].utcModify)
         res.data[i].lastLogin =
           res.data[i].lastLogin > 31539467000
-            ? this.timestampToTime(res.data[i].lastLogin)
+            ? timestampToTime(res.data[i].lastLogin)
             : '新用户'
       }
       this.userList = res.data
@@ -259,36 +268,13 @@ export default {
       }
       this.userList = []
       this.userList.push(res.data)
-      this.userList[0].utcCreate = this.timestampToTime(this.userList[0].utcCreate)
-      this.userList[0].utcModify = this.timestampToTime(this.userList[0].utcModify)
+      this.userList[0].utcCreate = timestampToTime(this.userList[0].utcCreate)
+      this.userList[0].utcModify = timestampToTime(this.userList[0].utcModify)
       this.userList[0].lastLogin =
         this.userList[0].lastLogin > 31539467000
-          ? this.timestampToTime(this.userList[0].lastLogin)
+          ? timestampToTime(this.userList[0].lastLogin)
           : '新用户'
       this.total = res.data.length
-    },
-    timestampToTime(timestamp) {
-      const date = new Date(timestamp)
-      const Y = date.getFullYear() + '-'
-      const M =
-        (date.getMonth() + 1 < 10
-          ? '0' + (date.getMonth() + 1)
-          : date.getMonth() + 1) + '-'
-      const D =
-        date.getDate() < 10 ? '0' + date.getDate() + ' ' : date.getDate() + ' '
-      const h =
-        date.getHours() < 10
-          ? '0' + date.getHours() + ':'
-          : date.getHours() + ':'
-      const m =
-        date.getMinutes() < 10
-          ? '0' + date.getMinutes() + ':'
-          : date.getMinutes() + ':'
-      const s =
-        date.getSeconds() < 10
-          ? '0' + date.getSeconds()
-          : date.getSeconds() + ''
-      return Y + M + D + h + m + s
     },
     // 监听 pagesize 改变的事件
     handleSizeChange(newSize) {

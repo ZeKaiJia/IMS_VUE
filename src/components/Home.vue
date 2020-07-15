@@ -11,7 +11,7 @@
     <!--页面主体区域-->
     <el-container>
       <!--侧边栏区域-->
-      <el-aside :width="isCollapse ? '64px' : '200px'">
+      <el-aside :width="isCollapse ? '58px' : '180px'">
         <div class="toggle-button" @click="toggleCollapse">|||</div>
         <!--侧边栏菜单区域-->
         <el-menu
@@ -162,6 +162,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../assets/css/menu.css';
 .home-container {
   height: 100%;
 }
