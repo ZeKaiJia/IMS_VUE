@@ -81,6 +81,7 @@ export default {
         if (result.code !== 200) {
           return this.$message.error('用户名或密码错误，请重试')
         } else {
+          this.$message.success('欢迎您，' + result.data.usrId)
           await this.$router.push('/home')
           window.sessionStorage.setItem('token', result.data.utcCreate)
         }

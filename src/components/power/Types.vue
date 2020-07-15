@@ -11,17 +11,21 @@
       <!--添加角色按钮区-->
       <el-row>
         <el-col>
-          <el-button type="primary">添加角色</el-button>
+          <el-button type="primary" disabled>添加角色</el-button>
         </el-col>
       </el-row>
-      <!--卡片视图-->
-      <el-card>
-        <el-table :data="typeList" border stripe>
-          <el-table-column type="index" label="#" width="48px" align="center"/>
-          <el-table-column label="角色名称" prop="authName" align="center"/>
-          <el-table-column label="角色描述" prop="description" align="center"/>
-        </el-table>
-      </el-card>
+      <el-table :data="typeList" border stripe>
+        <el-table-column type="index" label="#" width="48px" align="center"/>
+        <el-table-column label="角色名称" prop="authName" align="center"/>
+        <el-table-column label="角色描述" prop="description" align="center"/>
+        <el-table-column label="操作" width="340px" align="center">
+          <template slot-scope="">
+            <el-button type="primary" icon="el-icon-edit" size="mini" disabled>编辑</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" disabled>删除</el-button>
+            <el-button type="warning" icon="el-icon-setting" size="mini" disabled>分配权限</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
   </div>
 </template>
@@ -55,7 +59,7 @@ export default {
   },
   methods: {
     getTypeList () {
-      console.log('auto')
+      this.$message.warning('角色暂不支持自定义')
     }
   }
 }

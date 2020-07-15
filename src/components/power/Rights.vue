@@ -8,6 +8,12 @@
     </el-breadcrumb>
     <!--卡片视图-->
     <el-card>
+      <!--添加角色按钮区-->
+      <el-row>
+        <el-col>
+          <el-button type="primary" disabled>添加权限</el-button>
+        </el-col>
+      </el-row>
       <el-table :data="rightsList" border stripe>
         <el-table-column type="index" label="#" width="48px" align="center"/>
         <el-table-column label="权限名称" prop="authName" align="center"/>
@@ -81,7 +87,7 @@ export default {
   },
   methods: {
     getRightList () {
-      console.log('auto')
+      this.$message.warning('权限暂不支持自定义')
     }
   }
 }
