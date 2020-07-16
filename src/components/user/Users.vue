@@ -12,16 +12,16 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <el-input
-            placeholder="请输入内容"
+            placeholder="请输入用户名"
             v-model="queryInfo.usrId"
             @clear="getUserList"
             clearable
           >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="selectUser"
-            />
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="selectUser"
+          />
           </el-input>
         </el-col>
         <el-col :span="2.5">
@@ -243,6 +243,7 @@ export default {
     this.getUserList()
   },
   methods: {
+    // 获取用户列表
     async getUserList() {
       const { data: res } = await this.$http.get('login/selectAdmin')
       if (res.code !== 200) {
@@ -259,6 +260,7 @@ export default {
       this.userList = res.data
       this.total = res.data.length
     },
+    // 查找用户
     async selectUser() {
       const { data: res } = await this.$http.get('login/selectAdminById', {
         params: this.queryInfo

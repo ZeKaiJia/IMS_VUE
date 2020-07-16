@@ -1,3 +1,4 @@
+// 时间戳转精确日期
 function timestampToTime(timestamp) {
   const date = new Date(timestamp)
   const Y = date.getFullYear() + '-'
@@ -21,6 +22,7 @@ function timestampToTime(timestamp) {
       : date.getSeconds() + ''
   return Y + M + D + h + m + s
 }
+// 时间戳转年月日
 function easyTimestamp(timestamp) {
   const date = new Date(timestamp)
   const Y = date.getFullYear() + '-'
@@ -32,7 +34,20 @@ function easyTimestamp(timestamp) {
     date.getDate() < 10 ? '0' + date.getDate() + ' ' : date.getDate() + ' '
   return Y + M + D
 }
+// 学生性别快速转换
+function easyChangeGender (transData) {
+  if (transData === 1) {
+    return '男'
+  } else if (transData === 2) {
+    return '女'
+  } else if (transData === '男') {
+    return 1
+  } else {
+    return 2
+  }
+}
 export {
   timestampToTime,
-  easyTimestamp
+  easyTimestamp,
+  easyChangeGender
 }
