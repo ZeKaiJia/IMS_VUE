@@ -6,7 +6,13 @@
         <img src="../assets/img/avater.png" alt="" />
         <span>综合信息管理系统</span>
       </div>
-      <el-button type="info" @click="logout">退出</el-button>
+      <div>
+        <span>{{this.showUser}}</span>
+        <div>
+          <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>
+        </div>
+        <el-button type="info" @click="logout">退出</el-button>
+      </div>
     </el-header>
     <!--页面主体区域-->
     <el-container>
@@ -67,6 +73,7 @@
 export default {
   data() {
     return {
+      showUser: '',
       menuList: [
         {
           id: 1,
@@ -135,6 +142,7 @@ export default {
   created() {
     this.getMenuList()
     this.activePath = window.sessionStorage.getItem('activePath')
+    this.showUser = window.sessionStorage.getItem('user')
   },
   name: 'Home',
   methods: {
@@ -206,5 +214,9 @@ export default {
   text-align: center;
   letter-spacing: 0.2em;
   cursor: pointer;
+}
+.el-avatar {
+  margin-top: 4px;
+  margin-right: 16px;
 }
 </style>

@@ -140,7 +140,43 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <!--修改用户的对话框-->
+    <!--添加学生的对话框-->
+    <el-dialog
+      title="添加学生"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
+      <!--内容主题区域-->
+      <el-form
+        :model="addForm"
+        :rules="addFormRules"
+        ref="addFormRef"
+        label-width="70px"
+      >
+        <el-form-item label="学号" prop="stuId">
+          <el-input v-model="addForm.stuId" />
+        </el-form-item>
+        <el-form-item label="姓名" prop="stuName">
+          <el-input v-model="addForm.stuName" />
+        </el-form-item>
+        <el-form-item label="性别" prop="stuGender">
+          <el-input v-model="addForm.stuGender" />
+        </el-form-item>
+        <el-form-item label="生日" prop="stuBirthday">
+          <el-input v-model="addForm.stuBirthday" />
+        </el-form-item>
+        <el-form-item label="邮箱" prop="stuEmail">
+          <el-input v-model="addForm.stuEmail" />
+        </el-form-item>
+      </el-form>
+      <!--底部按钮区-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addStudent">修 改</el-button>
+      </span>
+    </el-dialog>
+    <!--修改学生的对话框-->
     <el-dialog
       title="修改学生"
       :visible.sync="editDialogVisible"
@@ -150,7 +186,7 @@
       <!--内容主题区域-->
       <el-form
         :model="editForm"
-        :rules="addFormRules"
+        :rules="editFormRules"
         ref="editFormRef"
         label-width="70px"
       >
@@ -180,7 +216,7 @@
 </template>
 
 <script>
-import { easyChangeGender, easyTimestamp, timestampToTime } from '../../plugins/utils'
+import { easyChangeGender, easyTimestamp, operateAge, timestampToTime } from '../../plugins/utils'
 export default {
   name: 'Student',
   data() {
@@ -212,7 +248,16 @@ export default {
       addDialogVisible: false,
       // 控制修改学生对话框的显示
       editDialogVisible: false,
-      // 查询学生的表单数据
+      // 添加学生的表单数据
+      addForm: {
+        stuId: '',
+        stuName: '',
+        stuGender: '',
+        stuBirthday: '',
+        stuEmail: '',
+        stuAge: ''
+      },
+      // 修改学生的表单数据
       editForm: {
         stuId: '',
         stuName: '',
@@ -221,13 +266,40 @@ export default {
         stuEmail: ''
       },
       // 添加表单的验证规则对象
-      addFormRules: {
+      editFormRules: {
         stuId: [
           { required: true, message: '请输入学生ID,1-2位:入学年份,3-4位:专业号,5-6:班级号,7-8:学号', trigger: 'blur' }
         ],
         stuName: [
           { required: true, message: '请输入学生姓名', trigger: 'blur' },
-          { min: 2, max: 4, message: '长度在2到4个中文汉字', trigger: 'blur' }
+          { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
+        ],
+        stuGender: [
+          { required: true, message: '请输入学生性别', trigger: 'blur' },
+          {
+            type: 'enum',
+            enum: ['男', '女'],
+            message: '角色类型必须为男或女',
+            trigger: 'blur'
+          }
+        ],
+        stuBirthday: [
+          { required: true, message: '请输入学生生日', trigger: 'blur' },
+          { validator: checkDate, trigger: 'blur' }
+        ],
+        stuEmail: [
+          { required: true, message: '请输入学生邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ]
+      },
+      addFormRules: {
+        stuId: [
+          { required: true, message: '请输入学生ID,1-2位:入学年份,3-4位:专业号,5-6:班级号,7-8:学号', trigger: 'blur' },
+          { min: 8, max: 8, message: '长度为8位阿拉伯数字', trigger: 'blur' }
+        ],
+        stuName: [
+          { required: true, message: '请输入学生姓名', trigger: 'blur' },
+          { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
         ],
         stuGender: [
           { required: true, message: '请输入学生性别', trigger: 'blur' },
@@ -308,7 +380,11 @@ export default {
         }
       }
     },
-    // 监听添加用户对话框的关闭事件
+    // 监听添加学生对话框的关闭事件
+    addDialogClosed() {
+      this.$refs.addFormRef.resetFields()
+    },
+    // 监听修改学生对话框的关闭事件
     editDialogClosed() {
       this.$refs.editFormRef.resetFields()
     },
@@ -325,7 +401,28 @@ export default {
       this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
       this.editDialogVisible = true
     },
-    // 点击按钮修改用户信息
+    // 点击按钮添加学生信息
+    addStudent() {
+      this.$refs.addFormRef.validate(async (valid) => {
+        if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
+        this.addForm.stuGender = easyChangeGender(this.addForm.stuGender)
+        this.addForm.stuAge = operateAge(this.addForm.stuBirthday)
+        const { data: res } = await this.$http.post(
+          'student/insert',
+          this.addForm
+        )
+        if (res.code !== 200) {
+          this.addDialogVisible = false
+          return this.$message.error('添加学生失败')
+        } else {
+          this.addDialogVisible = false
+          this.$message.success('添加学生成功')
+          console.log(res)
+        }
+        this.getStudentList()
+      })
+    },
+    // 点击按钮修改学生信息
     editStudent() {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
@@ -336,14 +433,38 @@ export default {
         )
         if (res.code !== 200) {
           this.editDialogVisible = false
-          return this.$message.error('修改用户失败')
+          return this.$message.error('修改学生失败')
         } else {
           this.editDialogVisible = false
-          this.$message.success('修改用户成功')
+          this.$message.success('修改学生成功')
           console.log(res)
         }
         this.getStudentList()
       })
+    },
+    // 点击按钮删除学生信息
+    async removeStuById(stuId) {
+      // 弹框询问
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该学生, 是否继续?',
+        '⚠️警告',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch((err) => err)
+      // 取消操作返回cancel字符串
+      // 确认操作返回confirm字符串
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已撤回删除操作')
+      }
+      const { data: res } = await this.$http.post(`student/save?stuId=${stuId}`)
+      if (res.code !== 200) {
+        return this.$message.error('删除学生失败')
+      }
+      this.$message.success('删除学生成功')
+      this.getStudentList()
     }
   }
 }

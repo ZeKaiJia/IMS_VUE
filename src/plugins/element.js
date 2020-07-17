@@ -26,7 +26,8 @@ import {
   Dialog,
   MessageBox,
   Tag,
-  Alert
+  Alert,
+  Avatar
 } from 'element-ui'
 
 Vue.use(Button)
@@ -54,6 +55,7 @@ Vue.use(Pagination)
 Vue.use(Dialog)
 Vue.use(Tag)
 Vue.use(Alert)
+Vue.use(Avatar)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

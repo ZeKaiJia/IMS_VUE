@@ -46,8 +46,19 @@ function easyChangeGender (transData) {
     return 2
   }
 }
+// 计算学生年龄
+function operateAge (stuBirthday) {
+  const timestampStu = stuBirthday.valueOf(stuBirthday)
+  const timestampNow = (new Date()).valueOf()
+  const dateStu = new Date(timestampStu)
+  const dateNow = new Date(timestampNow)
+  const stuYear = dateStu.getFullYear()
+  const nowYear = dateNow.getFullYear()
+  return nowYear - stuYear
+}
 export {
   timestampToTime,
   easyTimestamp,
-  easyChangeGender
+  easyChangeGender,
+  operateAge
 }
