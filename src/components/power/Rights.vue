@@ -26,6 +26,7 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination layout="total" :total="total"> </el-pagination>
     </el-card>
   </div>
 </template>
@@ -46,32 +47,32 @@ export default {
         {
           id: 21,
           authName: '角色列表',
-          level: '1',
+          level: '2',
           path: 'types'
         },
         {
           id: 22,
           authName: '权限列表',
-          level: '0',
+          level: '2',
           path: 'rights'
         },
         {
           id: 31,
           authName: '学生列表',
-          level: '2',
+          level: '1',
           path: 'students'
         },
         {
           id: 41,
-          authName: '教师列表',
-          level: '2',
-          path: 'teachers'
+          authName: '课程列表',
+          level: '1',
+          path: 'subjects'
         },
         {
           id: 51,
-          authName: '课程列表',
-          level: '2',
-          path: 'lessons'
+          authName: '成绩列表',
+          level: '1',
+          path: 'scores'
         },
         {
           id: 61,
@@ -79,7 +80,8 @@ export default {
           level: '0',
           path: 'status'
         }
-      ]
+      ],
+      total: 7
     }
   },
   created() {

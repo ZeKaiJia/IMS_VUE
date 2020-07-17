@@ -3,7 +3,7 @@
     <!--头部区域-->
     <el-header>
       <div>
-        <img src="../assets/img/avater.png" alt="" />
+        <img style="margin-left: 10px" src="../assets/img/avater.png" alt="" />
         <span>综合信息管理系统</span>
       </div>
       <div>
@@ -18,7 +18,9 @@
     <el-container>
       <!--侧边栏区域-->
       <el-aside :width="isCollapse ? '58px' : '180px'">
-        <div class="toggle-button" @click="toggleCollapse">|||</div>
+        <div class="toggle-button" @click="toggleCollapse" style="display: flex; justify-content: center">
+          <i :class="'iconfont icon-icon-test39'" style="margin-left: 22px"/>
+        </div>
         <!--侧边栏菜单区域-->
         <el-menu
           background-color="#203a57"
@@ -99,20 +101,20 @@ export default {
         },
         {
           id: 4,
-          authName: '教师管理',
+          authName: '课程管理',
           children: [{
             id: 41,
-            authName: '教师列表',
-            path: 'teachers'
+            authName: '课程列表',
+            path: 'subjects'
           }]
         },
         {
           id: 5,
-          authName: '课程管理',
+          authName: '成绩管理',
           children: [{
             id: 51,
-            authName: '课程列表',
-            path: 'lessons'
+            authName: '成绩单',
+            path: 'scores'
           }]
         },
         {
@@ -129,7 +131,7 @@ export default {
         1: 'iconfont icon-icon-test35',
         2: 'iconfont icon-icon-test16',
         3: 'iconfont icon-icon-test38',
-        4: 'iconfont icon-icon-test37',
+        4: 'iconfont icon-icon-test9',
         5: 'iconfont icon-icon-test31',
         6: 'iconfont icon-icon-test29'
       },
@@ -217,6 +219,6 @@ export default {
 }
 .el-avatar {
   margin-top: 4px;
-  margin-right: 16px;
+  margin-right: 18px;
 }
 </style>

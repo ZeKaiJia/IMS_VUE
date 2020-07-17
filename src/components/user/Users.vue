@@ -120,9 +120,9 @@
         :model="addForm"
         :rules="addFormRules"
         ref="addFormRef"
-        label-width="70px"
+        label-width="80px"
       >
-        <el-form-item label="ID" prop="usrId">
+        <el-form-item label="用户名" prop="usrId">
           <el-input v-model="addForm.usrId" />
         </el-form-item>
         <el-form-item label="密码" prop="usrPassword">
@@ -150,9 +150,9 @@
         :model="editForm"
         :rules="addFormRules"
         ref="editFormRef"
-        label-width="70px"
+        label-width="80px"
       >
-        <el-form-item label="ID" prop="usrId">
+        <el-form-item label="用户名" prop="usrId">
           <el-input v-model="editForm.usrId" disabled />
         </el-form-item>
         <el-form-item label="密码" prop="usrPassword">

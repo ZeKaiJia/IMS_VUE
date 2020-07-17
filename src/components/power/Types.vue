@@ -49,7 +49,7 @@ export default {
         {
           id: 3,
           authName: '学生',
-          description: '能查阅学生、课程和教师信息'
+          description: '能查阅学生、课程的综合信息'
         }
       ]
     }

@@ -139,6 +139,8 @@
           </template>
         </el-table-column>
       </el-table>
+      <!--显示总条目数量-->
+      <el-pagination layout="total" :total="total"> </el-pagination>
     </el-card>
     <!--添加学生的对话框-->
     <el-dialog
