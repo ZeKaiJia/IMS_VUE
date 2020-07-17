@@ -63,7 +63,7 @@
         </el-menu>
       </el-aside>
       <!--侧边栏右侧区域-->
-      <el-main>
+      <el-main style="max-height: 90vh">
         <!--路由占位符-->
         <router-view />
       </el-main>

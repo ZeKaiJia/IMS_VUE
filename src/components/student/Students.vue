@@ -241,6 +241,7 @@ export default {
       }
     }
     return {
+      // 搜索信息
       queryInfo: {
         stuId: ''
       },
@@ -372,7 +373,7 @@ export default {
         }
       } else {
         const { data: res } = await this.$http.post(
-          `student/redelete?stuId=${studentInfo.stuId}`
+          `student/reDelete?stuId=${studentInfo.stuId}`
         )
         if (res.code !== 200) {
           return this.$message.error('开启学生失败')

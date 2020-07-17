@@ -302,7 +302,7 @@ export default {
         }
       } else {
         const { data: res } = await this.$http.post(
-          `login/redelete?usrId=${userInfo.usrId}`
+          `login/reDelete?usrId=${userInfo.usrId}`
         )
         if (res.code !== 200) {
           return this.$message.error('开启用户失败')
