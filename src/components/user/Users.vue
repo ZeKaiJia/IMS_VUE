@@ -54,7 +54,7 @@
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="开启"
-              inactive-text="关闭"
+              inactive-text="锁定"
               @change="userStateChange(scope.row)"
             >
             </el-switch>
@@ -148,7 +148,7 @@
       <!--内容主题区域-->
       <el-form
         :model="editForm"
-        :rules="addFormRules"
+        :rules="editFormRules"
         ref="editFormRef"
         label-width="80px"
       >
@@ -236,6 +236,21 @@ export default {
             trigger: 'blur'
           }
         ]
+      },
+      editFormRules: {
+        usrPassword: [
+          { required: true, message: '请输入用户密码', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+        ],
+        usrType: [
+          { required: true, message: '请输入用户角色类型', trigger: 'blur' },
+          {
+            type: 'enum',
+            enum: ['管理员', '教师', '学生'],
+            message: '角色类型必须为管理员、教师或学生',
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },
@@ -295,10 +310,10 @@ export default {
           `login/delete?usrId=${userInfo.usrId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('禁用用户失败')
+          return this.$message.error('锁定用户失败')
         } else {
           this.getUserList()
-          return this.$message.success('禁用用户成功')
+          return this.$message.success('锁定用户成功')
         }
       } else {
         const { data: res } = await this.$http.post(

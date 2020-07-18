@@ -94,7 +94,7 @@
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="开启"
-              inactive-text="关闭"
+              inactive-text="锁定"
               @change="studentStateChange(scope.row)"
             >
             </el-switch>
@@ -157,7 +157,7 @@
         label-width="70px"
       >
         <el-form-item label="学号" prop="stuId">
-          <el-input v-model="addForm.stuId" />
+          <el-input v-model="addForm.stuId" oninput="value=value.replace(/[^\d.]/g,'')"/>
         </el-form-item>
         <el-form-item label="姓名" prop="stuName">
           <el-input v-model="addForm.stuName" />
@@ -175,7 +175,7 @@
       <!--底部按钮区-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addStudent">修 改</el-button>
+        <el-button type="primary" @click="addStudent">添 加</el-button>
       </span>
     </el-dialog>
     <!--修改学生的对话框-->
@@ -266,12 +266,14 @@ export default {
         stuName: '',
         stuGender: '',
         stuBirthday: '',
-        stuEmail: ''
+        stuEmail: '',
+        stuAge: ''
       },
       // 添加表单的验证规则对象
-      editFormRules: {
+      addFormRules: {
         stuId: [
-          { required: true, message: '请输入学生ID,1-2位:入学年份,3-4位:专业号,5-6:班级号,7-8:学号', trigger: 'blur' }
+          { required: true, message: '请输入学生ID,1-2位:入学年份,3-4位:专业号,5-6:班级号,7-8:学号', trigger: 'blur' },
+          { min: 8, max: 8, message: '长度为8位阿拉伯数字', trigger: 'blur' }
         ],
         stuName: [
           { required: true, message: '请输入学生姓名', trigger: 'blur' },
@@ -295,11 +297,7 @@ export default {
           { validator: checkEmail, trigger: 'blur' }
         ]
       },
-      addFormRules: {
-        stuId: [
-          { required: true, message: '请输入学生ID,1-2位:入学年份,3-4位:专业号,5-6:班级号,7-8:学号', trigger: 'blur' },
-          { min: 8, max: 8, message: '长度为8位阿拉伯数字', trigger: 'blur' }
-        ],
+      editFormRules: {
         stuName: [
           { required: true, message: '请输入学生姓名', trigger: 'blur' },
           { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
@@ -366,10 +364,10 @@ export default {
           `student/delete?stuId=${studentInfo.stuId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('禁用学生失败')
+          return this.$message.error('锁定学生失败')
         } else {
           this.getStudentList()
-          return this.$message.success('禁用学生成功')
+          return this.$message.success('锁定学生成功')
         }
       } else {
         const { data: res } = await this.$http.post(
@@ -420,7 +418,6 @@ export default {
         } else {
           this.addDialogVisible = false
           this.$message.success('添加学生成功')
-          console.log(res)
         }
         this.getStudentList()
       })
@@ -430,6 +427,7 @@ export default {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
         this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
+        this.editForm.stuAge = operateAge(this.editForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/update',
           this.editForm
@@ -440,7 +438,6 @@ export default {
         } else {
           this.editDialogVisible = false
           this.$message.success('修改学生成功')
-          console.log(res)
         }
         this.getStudentList()
       })

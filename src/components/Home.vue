@@ -113,9 +113,20 @@ export default {
           authName: '成绩管理',
           children: [{
             id: 51,
-            authName: '成绩单',
+            authName: '成绩列表',
             path: 'scores'
-          }]
+          },
+          {
+            id: 52,
+            authName: '学生成绩单',
+            path: 'stuTranscripts'
+          },
+          {
+            id: 53,
+            authName: '教师成绩单',
+            path: 'teaTranscripts'
+          }
+          ]
         },
         {
           id: 6,

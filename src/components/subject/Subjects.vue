@@ -46,7 +46,7 @@
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="开启"
-              inactive-text="关闭"
+              inactive-text="锁定"
               @change="subjectStateChange(scope.row)"
             >
             </el-switch>
@@ -67,7 +67,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 size="mini"
-                @click="showEditDialog(scope.row.usrId)"
+                @click="showEditDialog(scope.row.subId)"
                 round
               />
             </el-tooltip>
@@ -84,7 +84,7 @@
                 type="danger"
                 icon="el-icon-delete"
                 size="mini"
-                @click="removeUserById(scope.row.usrId)"
+                @click="removeSubById(scope.row.subId)"
                 round
               />
             </el-tooltip>
@@ -94,6 +94,72 @@
       <!--显示总条目数量-->
       <el-pagination layout="total" :total="total"> </el-pagination>
     </el-card>
+    <!--添加课程的对话框-->
+    <el-dialog
+      title="添加课程"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
+      <!--内容主题区域-->
+      <el-form
+        :model="addForm"
+        :rules="addFormRules"
+        ref="addFormRef"
+        label-width="100px"
+      >
+        <el-form-item label="课程号" prop="subId">
+          <el-input v-model="addForm.subId" />
+        </el-form-item>
+        <el-form-item label="课程名称" prop="subName">
+          <el-input v-model="addForm.subName" />
+        </el-form-item>
+        <el-form-item label="任课老师" prop="subTeacherId">
+          <el-input v-model="addForm.subTeacherId" />
+        </el-form-item>
+        <el-form-item label="学分" prop="subCredit">
+          <el-input v-model="addForm.subCredit" oninput="value=value.replace(/[^\d.]/g,'')"/>
+        </el-form-item>
+      </el-form>
+      <!--底部按钮区-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addSubject">添 加</el-button>
+      </span>
+    </el-dialog>
+    <!--修改课程的对话框-->
+    <el-dialog
+      title="修改课程"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="editDialogClosed"
+    >
+      <!--内容主题区域-->
+      <el-form
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="100px"
+      >
+        <el-form-item label="课程号" prop="subId">
+          <el-input v-model="editForm.subId" disabled />
+        </el-form-item>
+        <el-form-item label="课程名称" prop="subName">
+          <el-input v-model="editForm.subName" />
+        </el-form-item>
+        <el-form-item label="任课老师" prop="subTeacherId">
+          <el-input v-model="editForm.subTeacherId" />
+        </el-form-item>
+        <el-form-item label="学分" prop="subCredit">
+          <el-input v-model="editForm.subCredit" oninput="value=value.replace(/[^\d.]/g,'')"/>
+        </el-form-item>
+      </el-form>
+      <!--底部按钮区-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editSubject">修 改</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -108,6 +174,51 @@ export default {
         subId: ''
       },
       subjectList: [],
+      // 添加课程的表单数据
+      addForm: {
+        subId: '',
+        subName: '',
+        subTeacherId: '',
+        subCredit: ''
+      },
+      // 修改课程的表单数据
+      editForm: {
+        subId: '',
+        subName: '',
+        subTeacherId: '',
+        subCredit: ''
+      },
+      // 添加表单的验证规则对象
+      addFormRules: {
+        subId: [
+          { required: true, message: '请输入课程号', trigger: 'blur' },
+          { min: 3, max: 3, message: '课程号必须为3位数字', trigger: 'blur' }
+        ],
+        subName: [
+          { required: true, message: '请输入课程名称', trigger: 'blur' },
+          { max: 10, message: '课程名称不得超过10个字符，请填写简称', trigger: 'blur' }
+        ],
+        subTeacherId: [
+          { required: true, message: '请输入教师用户名(ID)', trigger: 'blur' },
+          { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
+        ],
+        subCredit: [
+          { required: true, message: '请输入数字类型的课程学分', trigger: 'blur' }
+        ]
+      },
+      editFormRules: {
+        subName: [
+          { required: true, message: '请输入课程名称', trigger: 'blur' },
+          { max: 10, message: '课程名称不得超过10个字符，请填写简称', trigger: 'blur' }
+        ],
+        subTeacherId: [
+          { required: true, message: '请输入教师用户名(ID)', trigger: 'blur' },
+          { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
+        ],
+        subCredit: [
+          { required: true, message: '请输入数字类型的课程学分', trigger: 'blur' }
+        ]
+      },
       total: 0,
       // 控制添加课程对话框的显示
       addDialogVisible: false,
@@ -153,10 +264,10 @@ export default {
           `subject/delete?subId=${subjectInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('禁用课程失败')
+          return this.$message.error('锁定课程失败')
         } else {
           this.getSubjectList()
-          return this.$message.success('禁用课程成功')
+          return this.$message.success('锁定课程成功')
         }
       } else {
         const { data: res } = await this.$http.post(
@@ -169,6 +280,85 @@ export default {
           return this.$message.success('开启课程成功')
         }
       }
+    },
+    // 监听添加课程对话框的关闭事件
+    addDialogClosed() {
+      this.$refs.addFormRef.resetFields()
+    },
+    // 监听修改课程对话框的关闭事件
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
+    },
+    // 监听添加课程对话框的点击事件
+    async showEditDialog(subId) {
+      const { data: res } = await this.$http.get(
+        `subject/selectAdminById?subId=${subId}`
+      )
+      if (res.code !== 200) {
+        return this.$message.error('查询课程信息失败')
+      }
+      this.editForm = res.data
+      this.editDialogVisible = true
+    },
+    // 点击按钮添加课程信息
+    addSubject() {
+      this.$refs.addFormRef.validate(async (valid) => {
+        if (!valid) return this.$message.error('请填写正确的课程信息后再提交')
+        const { data: res } = await this.$http.post(
+          'subject/insert',
+          this.addForm
+        )
+        if (res.code !== 200) {
+          this.addDialogVisible = false
+          return this.$message.error('添加课程失败')
+        } else {
+          this.addDialogVisible = false
+          this.$message.success('添加课程成功')
+        }
+        this.getSubjectList()
+      })
+    },
+    // 点击按钮修改课程信息
+    editSubject() {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) return this.$message.error('请填写正确的课程信息后再提交')
+        const { data: res } = await this.$http.post(
+          'subject/update',
+          this.editForm
+        )
+        if (res.code !== 200) {
+          this.editDialogVisible = false
+          return this.$message.error('修改课程失败')
+        } else {
+          this.editDialogVisible = false
+          this.$message.success('修改课程成功')
+        }
+        this.getSubjectList()
+      })
+    },
+    // 点击按钮删除课程信息
+    async removeSubById(subId) {
+      // 弹框询问
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该课程, 是否继续?',
+        '⚠️警告',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch((err) => err)
+      // 取消操作返回cancel字符串
+      // 确认操作返回confirm字符串
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已撤回删除操作')
+      }
+      const { data: res } = await this.$http.post(`subject/save?subId=${subId}`)
+      if (res.code !== 200) {
+        return this.$message.error('删除课程失败')
+      }
+      this.$message.success('删除课程成功')
+      this.getSubjectList()
     }
   }
 }

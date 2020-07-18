@@ -75,6 +75,18 @@ export default {
           path: 'scores'
         },
         {
+          id: 52,
+          authName: '学生成绩单',
+          level: '0',
+          path: 'scores'
+        },
+        {
+          id: 53,
+          authName: '教师成绩单',
+          level: '1',
+          path: 'scores'
+        },
+        {
           id: 61,
           authName: '综合数据',
           level: '0',
