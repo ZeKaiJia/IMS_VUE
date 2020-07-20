@@ -29,6 +29,14 @@
           >添加课程</el-button
           >
         </el-col>
+        <el-col :span="11">
+          <el-alert
+            title="通过锁定课程可以禁用该课程数据的修改和删除操作"
+            style="min-width: 480px; max-width: 480px"
+            type="info"
+            show-icon>
+          </el-alert>
+        </el-col>
       </el-row>
       <!--课程列表区域-->
       <el-table :data="subjectList" border>
