@@ -40,14 +40,34 @@
       </el-row>
       <!--用户列表区域-->
       <el-table :data="userList" :row-class-name="tableRowClassName" border>
-        <el-table-column type="index" label="序号" width="38px" align="center"/>
-        <el-table-column label="用户名" prop="usrId" align="center"/>
-        <el-table-column label="密码" prop="usrPassword" align="center"/>
-        <el-table-column label="角色" prop="usrType" width="78px" align="center"/>
-        <el-table-column label="创建时间" prop="utcCreate" width="190px" align="center"/>
-        <el-table-column label="修改时间" prop="utcModify" width="190px" align="center"/>
-        <el-table-column label="最近登录时间" prop="lastLogin" width="190px" align="center"/>
-        <el-table-column label="状态" width="148px" align="center">
+        <!--拓展列-->
+        <el-table-column type="expand" label="详细" width="64px" align="center">
+          <template slot-scope="scope">
+            <el-row>
+              <el-tag type="info" effect="plain">
+                创建时间
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.utcCreate}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                修改时间
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.utcModify}}
+              </el-tag>
+            </el-row>
+          </template>
+        </el-table-column>
+        <!--索引列-->
+        <el-table-column type="index" label="序号" width="58px" align="center"/>
+        <el-table-column label="用户名" prop="usrId" align="center" min-width="120px"/>
+        <el-table-column label="密码" prop="usrPassword" align="center" min-width="120px"/>
+        <el-table-column label="角色" prop="usrType" width="78px" align="center" min-width="100px"/>
+        <el-table-column label="最近登录时间" prop="lastLogin" align="center" min-width="190px"/>
+        <el-table-column label="状态" align="center" width="180px">
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.isReal"
@@ -60,7 +80,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="128px" align="center">
+        <el-table-column label="操作" align="center" width="180px">
           <template slot-scope="scope">
             <el-tooltip
               class="dark"
@@ -432,5 +452,10 @@ export default {
   position: absolute;
   top: 116%;
   left: 0;
+}
+.el-tag {
+  margin-left: 16px;
+  margin-top: 6px;
+  margin-bottom: 6px;
 }
 </style>

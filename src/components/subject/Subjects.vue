@@ -25,9 +25,7 @@
           </el-input>
         </el-col>
         <el-col :span="2.5">
-          <el-button type="primary" @click="addDialogVisible = true"
-          >添加课程</el-button
-          >
+          <el-button type="primary" @click="addDialogVisible = true">添加课程</el-button>
         </el-col>
         <el-col :span="11">
           <el-alert
@@ -40,14 +38,33 @@
       </el-row>
       <!--课程列表区域-->
       <el-table :data="subjectList" border>
+        <!--拓展列-->
+        <el-table-column type="expand" label="详细" width="64px" align="center">
+          <template slot-scope="scope">
+            <el-row>
+              <el-tag type="info" effect="plain">
+                创建时间
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.utcCreate}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                修改时间
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.utcModify}}
+              </el-tag>
+            </el-row>
+          </template>
+        </el-table-column>
         <el-table-column type="index" label="序号" width="58px" align="center"/>
-        <el-table-column label="课程号" prop="subId" width="80px" align="center"/>
-        <el-table-column label="课程名称" prop="subName" align="center"/>
-        <el-table-column label="任课教师" prop="subTeacherId" width="124px" align="center"/>
-        <el-table-column label="学分" prop="subCredit" width="64px" align="center"/>
-        <el-table-column label="创建时间" prop="utcCreate" width="190px" align="center"/>
-        <el-table-column label="修改时间" prop="utcModify" width="190px" align="center"/>
-        <el-table-column label="状态" width="148px" align="center">
+        <el-table-column label="课程号" prop="subId" align="center"/>
+        <el-table-column label="课程名称" prop="subName" align="center" min-width="100px"/>
+        <el-table-column label="任课教师" prop="subTeacherId" align="center" min-width="100px"/>
+        <el-table-column label="学分" prop="subCredit" align="center"/>
+        <el-table-column label="状态" align="center" width="180px">
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.isReal"
@@ -60,7 +77,7 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="128px" align="center">
+        <el-table-column label="操作" align="center" width="180px">
           <template slot-scope="scope">
             <el-tooltip
               class="dark"
@@ -82,7 +99,7 @@
             <el-tooltip
               class="dark"
               effect="dark"
-              content="删除角色"
+              content="删除课程"
               placement="top"
               :enterable="false"
               :hide-after="2000"
@@ -297,7 +314,7 @@ export default {
     editDialogClosed() {
       this.$refs.editFormRef.resetFields()
     },
-    // 监听添加课程对话框的点击事件
+    // 监听修改课程对话框的点击事件
     async showEditDialog(subId) {
       const { data: res } = await this.$http.get(
         `subject/selectAdminById?subId=${subId}`
@@ -373,5 +390,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+.el-tag {
+  margin-left: 16px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
 </style>
