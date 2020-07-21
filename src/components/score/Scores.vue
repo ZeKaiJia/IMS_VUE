@@ -14,11 +14,11 @@
           <el-form v-model="queryInfo" label-width="12px">
             <el-row>
               <el-col :span="10">
-                <el-form-item prop="stuId">
+                <el-form-item prop="stuId" style="margin-top: -1px">
                   <el-input
                     v-model="queryInfo.stuId"
                     placeholder="请输入学号"
-                    @clear="getScoreList"
+                    @clear="selectSubject"
                     clearable/>
                 </el-form-item>
               </el-col>
@@ -27,7 +27,7 @@
                   <el-input
                     v-model="queryInfo.subId"
                     placeholder="请输入课程号"
-                    @clear="getScoreList"
+                    @clear="selectSubject"
                     clearable>
                     <el-button
                       slot="append"
@@ -45,14 +45,14 @@
         </el-col>
         <el-col :span="11">
           <el-alert
-            title="只输入学号或课程号可以搜索所有相关数据"
-            style="min-width: 400px; max-width: 420px"
+            title="只输入单个学号或课程号可以搜索所有相关数据"
+            style="min-width: 410px; max-width: 420px"
             type="info"
             show-icon>
           </el-alert>
         </el-col>
       </el-row>
-      <!--课程列表区域-->
+      <!--成绩列表区域-->
       <el-table :data="scoreList" border>
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
@@ -80,6 +80,7 @@
         <el-table-column label="学号" prop="stuId" align="center" min-width="100px"/>
         <el-table-column label="课程号" prop="subId" align="center"/>
         <el-table-column label="分数" prop="subScore" align="center"/>
+        <el-table-column label="绩点" prop="subGPA" align="center"/>
         <el-table-column label="状态" align="center" width="180px">
           <template slot-scope="scope">
             <el-switch
@@ -195,11 +196,13 @@
         <el-button type="primary" @click="editScore">修 改</el-button>
       </span>
     </el-dialog>
+    <!--回到顶部-->
+    <el-backtop target=".el-main" :bottom="50">△</el-backtop>
   </div>
 </template>
 
 <script>
-import { timestampToTime } from '../../plugins/utils'
+import { operateGPA, timestampToTime } from '../../plugins/utils'
 export default {
   name: 'Scores',
   data() {
@@ -218,6 +221,8 @@ export default {
         subId: ''
       },
       scoreList: [],
+      studentList: [],
+      subjectList: [],
       // 添加课程的表单数据
       addForm: {
         stuId: '',
@@ -271,6 +276,7 @@ export default {
       for (let i = 0; i < res.data.length; i++) {
         res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
         res.data[i].utcModify = timestampToTime(res.data[i].utcModify)
+        res.data[i].subGPA = operateGPA(res.data[i].subScore)
       }
       this.scoreList = res.data
       this.total = res.data.length
@@ -288,6 +294,7 @@ export default {
         this.scoreList.push(res.data)
         this.scoreList[0].utcCreate = timestampToTime(this.scoreList[0].utcCreate)
         this.scoreList[0].utcModify = timestampToTime(this.scoreList[0].utcModify)
+        this.scoreList[0].subGPA = operateGPA(this.scoreList[0].subScore)
         this.total = res.data.length
       } else if (this.queryInfo.stuId === '' && this.queryInfo.subId !== '') {
         const { data: res } = await this.$http.get(
@@ -299,6 +306,7 @@ export default {
         for (let i = 0; i < res.data.length; i++) {
           res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
           res.data[i].utcModify = timestampToTime(res.data[i].utcModify)
+          res.data[i].subGPA = operateGPA(res.data[i].subScore)
         }
         this.scoreList = res.data
         this.total = res.data.length
@@ -312,10 +320,12 @@ export default {
         for (let i = 0; i < res.data.length; i++) {
           res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
           res.data[i].utcModify = timestampToTime(res.data[i].utcModify)
+          res.data[i].subGPA = operateGPA(res.data[i].subScore)
         }
         this.scoreList = res.data
         this.total = res.data.length
       } else {
+        this.getScoreList()
         return this.$message.error('请输入数据后再查询!')
       }
     },

@@ -185,6 +185,8 @@
         <el-button type="primary" @click="editSubject">修 改</el-button>
       </span>
     </el-dialog>
+    <!--回到顶部-->
+    <el-backtop target=".el-main" :bottom="50">△</el-backtop>
   </div>
 </template>
 

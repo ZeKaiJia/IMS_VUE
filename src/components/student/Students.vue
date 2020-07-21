@@ -217,6 +217,8 @@
         <el-button type="primary" @click="editStudent">修 改</el-button>
       </span>
     </el-dialog>
+    <!--回到顶部-->
+    <el-backtop target=".el-main" :bottom="50">△</el-backtop>
   </div>
 </template>
 
@@ -340,6 +342,7 @@ export default {
         res.data[i].utcModify = timestampToTime(res.data[i].utcModify)
         res.data[i].stuBirthday = easyTimestamp(res.data[i].stuBirthday.valueOf())
         res.data[i].stuGender = easyChangeGender(res.data[i].stuGender)
+        res.data[i].stuAge = operateAge(res.data[i].stuBirthday.valueOf())
       }
       this.stuList = res.data
       this.total = res.data.length
@@ -358,6 +361,7 @@ export default {
       this.stuList[0].utcModify = timestampToTime(this.stuList[0].utcModify)
       this.stuList[0].stuBirthday = easyTimestamp(this.stuList[0].stuBirthday.valueOf())
       this.stuList[0].stuGender = easyChangeGender(this.stuList[0].stuGender)
+      this.stuList[0].stuAge = operateAge(this.stuList[0].stuBirthday)
       this.total = res.data.length
     },
     // 监听 switch 开关的改变

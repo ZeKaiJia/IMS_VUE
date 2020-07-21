@@ -56,9 +56,20 @@ function operateAge (stuBirthday) {
   const nowYear = dateNow.getFullYear()
   return nowYear - stuYear
 }
+// 计算课程绩点得分
+function operateGPA (subScore) {
+  if (subScore > 95) {
+    return 5.0
+  } else if (subScore < 60) {
+    return 0.0
+  } else {
+    return (50 - (95 - subScore)) / 10
+  }
+}
 export {
   timestampToTime,
   easyTimestamp,
   easyChangeGender,
-  operateAge
+  operateAge,
+  operateGPA
 }

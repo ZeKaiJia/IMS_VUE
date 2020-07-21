@@ -9,6 +9,7 @@ import Types from '../components/power/Types'
 import Students from '../components/student/Students'
 import Subjects from '../components/subject/Subjects'
 import Scores from '../components/score/Scores'
+import StuTranscripts from '../components/score/StuTranscripts'
 
 Vue.use(Router)
 
@@ -28,7 +29,8 @@ const router = new Router({
         { path: '/types', component: Types },
         { path: '/students', component: Students },
         { path: '/subjects', component: Subjects },
-        { path: '/scores', component: Scores }
+        { path: '/scores', component: Scores },
+        { path: '/stuTranscripts', component: StuTranscripts }
       ]
     }
   ]

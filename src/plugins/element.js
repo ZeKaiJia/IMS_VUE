@@ -27,7 +27,10 @@ import {
   MessageBox,
   Tag,
   Alert,
-  Avatar
+  Avatar,
+  Image,
+  Backtop,
+  Loading
 } from 'element-ui'
 
 Vue.use(Button)
@@ -56,6 +59,9 @@ Vue.use(Dialog)
 Vue.use(Tag)
 Vue.use(Alert)
 Vue.use(Avatar)
+Vue.use(Image)
+Vue.use(Backtop)
+Vue.use(Loading)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
