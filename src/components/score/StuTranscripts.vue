@@ -41,9 +41,19 @@
           <el-col :span="6" align="center">
             <el-row>
               <el-image
+                v-loading="loading"
                 style="width: 16.5vw; height: 16.5vw; min-width: 145px; min-height: 145px"
                 :src="picSrc"
-                fit="cover"/>
+                fit="cover"
+                @load="loadSuccess"
+                @error="loadError"
+              >
+                <div slot="error" class="image-slot"
+                     style="display: flex; justify-content: center; align-items: center; height: 100%; flex-flow: column">
+                  <span class="el-icon-picture-outline" style="width: 48px; height: 48px; font-size: 48px"/>
+                  <span style="margin-top: 12px">加载失败</span>
+                </div>
+              </el-image>
             </el-row>
           </el-col>
           <!--基本信息区-->
@@ -93,7 +103,6 @@
         <el-row>
           <el-table
             :data="scoreList"
-            v-loading="loading"
             :header-cell-style="{background:'#eef1f6',color:'#606266'}"
             border>
             <el-table-column label="课程号" prop="subId" align="center"/>
@@ -125,6 +134,18 @@ export default {
       scoreList: [],
       // 初始提示信息
       info: '成绩单（暂无数据）',
+      src: [
+        'http://s1.wailian.download/2020/07/25/10.jpg',
+        'http://s1.wailian.download/2020/07/25/9.jpg',
+        'http://s1.wailian.download/2020/07/25/8.jpg',
+        'http://s1.wailian.download/2020/07/25/48115bc5f6b28f420.jpg',
+        'http://s1.wailian.download/2020/07/25/17fa9bfce491ad355.jpg',
+        'http://s1.wailian.download/2020/07/25/340a681c7decd4737.jpg',
+        'http://s1.wailian.download/2020/07/25/2624999114ba2e4b2.jpg',
+        'http://s1.wailian.download/2020/07/25/77f2cb01e10ff9b38.jpg',
+        'http://s1.wailian.download/2020/07/25/555a8c4ec25caa5c0.jpg',
+        'http://s1.wailian.download/2020/07/25/6cc62a32fd0f389f4.jpg'
+      ],
       picSrc: '',
       // 开启加载
       loading: true
@@ -138,8 +159,6 @@ export default {
     },
     // 查找所有相关信息
     async getAllInfo() {
-      // 获取证件照
-      this.picSrc = 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
       // 查询学生信息
       const { data: stuRes } = await this.$http.get('student/selectAdminById', {
         params: this.queryInfo
@@ -147,6 +166,7 @@ export default {
       if (stuRes.code !== 200) {
         return this.$message.error('获取学生列表失败!')
       }
+      this.loadPic(stuRes.data.stuGender)
       this.studentList = []
       this.studentList.push(stuRes.data)
       this.studentList[0].stuBirthday = easyTimestamp(this.studentList[0].stuBirthday.valueOf())
@@ -167,7 +187,6 @@ export default {
       }
       this.scoreList = ScoRes.data
       this.show = true
-      this.loading = false
     },
     // 查询该学生每门课程的详细信息
     async selectEachSubject(subId) {
@@ -179,6 +198,29 @@ export default {
         subName: subRes.data.subName,
         subTeacherId: subRes.data.subTeacherId
       }
+    },
+    // 获取图片地址
+    loadPic(gender) {
+      // 获取上次查询的证件照
+      const prePicSrc = this.picSrc
+      // 判断性别获取地址
+      if (gender === 1) {
+        this.picSrc = this.src[Math.floor(Math.random() * 5) + 5]
+      } else {
+        this.picSrc = this.src[Math.floor(Math.random() * 5)]
+      }
+      // 如果图片地址不相同则开启加载
+      if (prePicSrc !== this.picSrc) {
+        this.loading = true
+      }
+    },
+    // 图片加载成功
+    loadSuccess() {
+      this.loading = false
+    },
+    // 图片加载失败
+    loadError() {
+      this.loading = false
     }
   }
 }

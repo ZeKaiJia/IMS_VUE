@@ -63,7 +63,7 @@
         </el-menu>
       </el-aside>
       <!--侧边栏右侧区域-->
-      <el-main style="max-height: 90vh">
+      <el-main style="max-height: 92.4vh;">
         <!--路由占位符-->
         <router-view />
       </el-main>
@@ -123,8 +123,8 @@ export default {
           },
           {
             id: 53,
-            authName: '教师成绩单',
-            path: 'teaTranscripts'
+            authName: '课程成绩单',
+            path: 'subTranscripts'
           }
           ]
         },

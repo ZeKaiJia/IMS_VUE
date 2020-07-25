@@ -30,8 +30,10 @@ import {
   Avatar,
   Image,
   Backtop,
-  Loading
+  Loading,
+  Popover
 } from 'element-ui'
+import VueLazyload from 'vue-lazyload'
 
 Vue.use(Button)
 Vue.use(FormItem)
@@ -62,6 +64,14 @@ Vue.use(Avatar)
 Vue.use(Image)
 Vue.use(Backtop)
 Vue.use(Loading)
+Vue.use(Popover)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
+
+Vue.use(VueLazyload, {
+  preLoad: 1.3,
+  error: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+  loading: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+  attempt: 1
+})
