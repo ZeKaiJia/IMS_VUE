@@ -14,7 +14,12 @@
           <el-button type="primary" disabled>添加角色</el-button>
         </el-col>
       </el-row>
-      <el-table :data="typeList" border stripe>
+      <el-table
+        :data="typeList"
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+        border
+        stripe
+      >
         <el-table-column type="index" label="#" width="48px" align="center"/>
         <el-table-column label="角色名称" prop="authName" align="center"/>
         <el-table-column label="角色描述" prop="description" align="center"/>

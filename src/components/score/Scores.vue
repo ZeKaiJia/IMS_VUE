@@ -9,20 +9,26 @@
     <!--卡片视图区-->
     <el-card>
       <!--搜索与添加区域-->
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <el-form v-model="queryInfo" label-width="12px">
+      <el-row :gutter="10">
+        <el-col :span="9" style="min-width: 400px">
+          <el-form v-model="queryInfo" label-width="10px">
             <el-row>
-              <el-col :span="10">
-                <el-form-item prop="stuId" style="margin-top: -1px">
+              <el-col :span="12">
+                <el-form-item prop="stuId">
                   <el-input
                     v-model="queryInfo.stuId"
                     placeholder="请输入学号"
                     @clear="selectSubject"
-                    clearable/>
+                    clearable>
+                    <el-button
+                      slot="append"
+                      icon="el-icon-search"
+                      @click="selectSubject"
+                    />
+                  </el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="14">
+              <el-col :span="12">
                 <el-form-item prop="subId">
                   <el-input
                     v-model="queryInfo.subId"
@@ -40,20 +46,29 @@
             </el-row>
           </el-form>
         </el-col>
-        <el-col :span="2.5">
+        <el-col :span="2.5" style="min-width: 100px">
           <el-button type="primary" @click="addDialogVisible = true">添加成绩</el-button>
         </el-col>
-        <el-col :span="11">
-          <el-alert
-            title="只输入单个学号或课程号可以搜索所有相关数据"
-            style="min-width: 410px; max-width: 420px"
-            type="info"
-            show-icon>
-          </el-alert>
+        <el-col :span="12.5">
+          <el-tooltip class="item" effect="light" placement="right" style="margin-top: 10px">
+            <div slot="content">
+              输入学号查询学生成绩表<br/>
+              输入课程号查询课程成绩表<br/>
+              同时输入学号和课程号查找指定学生指定课程的一门成绩
+            </div>
+            <el-button style="padding: 0; border-color: white" circle>
+              <i class="el-icon-info" style="font-size: 20px"/>
+            </el-button>
+          </el-tooltip>
         </el-col>
       </el-row>
       <!--成绩列表区域-->
-      <el-table :data="showScoList" border>
+      <el-table
+        :data="showScoList"
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+        border
+        stripe
+      >
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">

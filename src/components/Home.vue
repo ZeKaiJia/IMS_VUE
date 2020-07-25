@@ -62,11 +62,19 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <!--侧边栏右侧区域-->
-      <el-main style="max-height: 92.4vh;">
-        <!--路由占位符-->
-        <router-view />
-      </el-main>
+      <el-container>
+        <!--侧边栏右侧区域-->
+        <el-main style="max-height: 88.6vh;">
+          <!--路由占位符-->
+          <router-view />
+        </el-main>
+        <el-footer height="30px">
+          <div style="display: flex; justify-content: center">© 2020 · ims.cool 版权所有 · 浙ICP备20021194号-1
+            <img src="https://img.alicdn.com/tfs/TB1Z.avK.z1gK0jSZLeXXb9kVXa-200-200.png"
+                 style="width: 24px; height: 24px; margin-top: 3px; margin-left: 8px"/>
+          </div>
+        </el-footer>
+      </el-container>
     </el-container>
   </el-container>
 </template>
@@ -231,5 +239,11 @@ export default {
 .el-avatar {
   margin-top: 4px;
   margin-right: 18px;
+}
+.el-footer {
+  background-color: #29384c;
+  color: #d7d7d7;
+  text-align: center;
+  line-height: 30px;
 }
 </style>

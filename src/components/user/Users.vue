@@ -39,7 +39,12 @@
         </el-col>
       </el-row>
       <!--用户列表区域-->
-      <el-table :data="showUsrList" :row-class-name="tableRowClassName" border>
+      <el-table
+        :data="showUsrList"
+        :row-class-name="tableRowClassName"
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+        border
+      >
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">

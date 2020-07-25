@@ -27,13 +27,13 @@
         {{this.info}}
       </el-card>
       <!--查询卡片区-->
-      <el-card style="margin-top: 14px" v-if="show">
+      <el-card style="margin-top: 14px" v-if="show" v-loading="mainLoading">
         <el-row :gutter="20">
-          <el-col :span="6" align="center">
-            <span style="font-weight: bold; font-size: 20px">证件照</span>
+          <el-col :span="6">
+            <div class="centerFont">证件照</div>
           </el-col>
-          <el-col :span="18" align="center">
-            <span style="font-weight: bold; font-size: 20px">基本信息</span>
+          <el-col :span="18">
+            <div class="centerFont">基本信息</div>
           </el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 16px">
@@ -57,7 +57,7 @@
             </el-row>
           </el-col>
           <!--基本信息区-->
-          <el-col :span="6" align="center">
+          <el-col :span="6" style="align-items: center">
             <el-row style="margin-top: -15px;">
               <el-table :data="studentList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
                 <el-table-column label="姓名" prop="stuName" align="center"/>
@@ -69,7 +69,7 @@
               </el-table>
             </el-row>
           </el-col>
-          <el-col :span="6" align="center">
+          <el-col :span="6" style="align-items: center">
             <el-row style="margin-top: -15px;">
               <el-table :data="studentList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
                 <el-table-column label="性别" prop="stuGender" align="center"/>
@@ -81,7 +81,7 @@
               </el-table>
             </el-row>
           </el-col>
-          <el-col :span="6" align="center">
+          <el-col :span="6" style="align-items: center">
             <el-row style="margin-top: -15px;">
               <el-table :data="studentList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
                 <el-table-column label="生日" prop="stuBirthday" align="center"/>
@@ -95,8 +95,8 @@
           </el-col>
         </el-row>
         <el-row style="margin-top: 12px">
-          <el-col align="center">
-            <span style="font-weight: bold; font-size: 20px">全部成绩</span>
+          <el-col>
+            <div class="centerFont">全部成绩</div>
           </el-col>
         </el-row>
         <!--课程列表区域-->
@@ -128,7 +128,7 @@ export default {
       show: false,
       // 搜索信息
       queryInfo: {
-        stuId: '18610201'
+        stuId: ''
       },
       studentList: [],
       scoreList: [],
@@ -148,14 +148,17 @@ export default {
       ],
       picSrc: '',
       // 开启加载
-      loading: true
+      loading: true,
+      mainLoading: true
     }
   },
   methods: {
     // 重置卡片显示
     resetShow() {
-      this.show = false
-      this.loading = true
+      this.mainLoading = true
+      setTimeout(() => {
+        this.show = false
+      }, 1000)
     },
     // 查找所有相关信息
     async getAllInfo() {
@@ -187,6 +190,9 @@ export default {
       }
       this.scoreList = ScoRes.data
       this.show = true
+      setTimeout(() => {
+        this.mainLoading = false
+      }, 1000)
     },
     // 查询该学生每门课程的详细信息
     async selectEachSubject(subId) {
@@ -227,4 +233,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+  .centerFont {
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+  }
 </style>

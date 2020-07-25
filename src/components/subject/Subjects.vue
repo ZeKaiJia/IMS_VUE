@@ -28,16 +28,26 @@
           <el-button type="primary" @click="addDialogVisible = true">添加课程</el-button>
         </el-col>
         <el-col :span="11">
-          <el-alert
-            title="通过锁定课程可以禁用该课程数据的修改和删除操作"
-            style="min-width: 480px; max-width: 480px"
-            type="info"
-            show-icon>
-          </el-alert>
+          <el-tooltip
+            class="item"
+            effect="light"
+            placement="right"
+            style="margin-top: 10px"
+            content="通过锁定课程可以禁用该课程数据的修改和删除操作"
+          >
+            <el-button style="padding: 0; border-color: white" circle>
+              <i class="el-icon-info" style="font-size: 20px"/>
+            </el-button>
+          </el-tooltip>
         </el-col>
       </el-row>
       <!--课程列表区域-->
-      <el-table :data="showSubList" border>
+      <el-table
+        :data="showSubList"
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+        border
+        stripe
+      >
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">

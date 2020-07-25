@@ -14,7 +14,7 @@
           <el-button type="primary" disabled>添加权限</el-button>
         </el-col>
         <el-col :span="2">
-          <el-tooltip class="item" effect="dark" placement="right" style="margin-top: 10px">
+          <el-tooltip class="item" effect="light" placement="right" style="margin-top: 10px">
             <div slot="content">
               一级权限为学生权限<br/>
               二级权限为教师权限<br/>
@@ -26,7 +26,12 @@
           </el-tooltip>
         </el-col>
       </el-row>
-      <el-table :data="rightsList" border stripe>
+      <el-table
+        :data="rightsList"
+        :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+        border
+        stripe
+      >
         <el-table-column type="index" label="#" width="48px" align="center"/>
         <el-table-column label="权限名称" prop="authName" align="center"/>
         <el-table-column label="路径名称" prop="path" align="center"/>
