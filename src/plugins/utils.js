@@ -66,10 +66,15 @@ function operateGPA (subScore) {
     return (50 - (95 - subScore)) / 10
   }
 }
+// 截取数据
+function sliceData (list, currentPage, pageSize) {
+  return list.slice((currentPage - 1) * pageSize, pageSize + (currentPage - 1) * pageSize)
+}
 export {
   timestampToTime,
   easyTimestamp,
   easyChangeGender,
   operateAge,
-  operateGPA
+  operateGPA,
+  sliceData
 }

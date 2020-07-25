@@ -39,7 +39,7 @@
         </el-col>
       </el-row>
       <!--学生列表区域-->
-      <el-table :data="stuList" border stripe>
+      <el-table :data="showStuList" border stripe>
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
@@ -86,7 +86,11 @@
           </template>
         </el-table-column>
         <!--索引列-->
-        <el-table-column type="index" label="序号" align="center"/>
+        <el-table-column label="序号" align="center">
+          <template slot-scope="scope">
+            <span>{{scope.$index+(currentPage - 1) * pageSize + 1}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="学号" prop="stuId" align="center" min-width="100px"/>
         <el-table-column label="姓名" prop="stuName" align="center" min-width="100px"/>
         <el-table-column label="性别" prop="stuGender" align="center"/>
@@ -142,8 +146,16 @@
           </template>
         </el-table-column>
       </el-table>
-      <!--显示总条目数量-->
-      <el-pagination layout="total" :total="total"> </el-pagination>
+      <!--显示分页信息-->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[1, 5, 10, 100]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
     </el-card>
     <!--添加学生的对话框-->
     <el-dialog
@@ -223,7 +235,7 @@
 </template>
 
 <script>
-import { easyChangeGender, easyTimestamp, operateAge, timestampToTime } from '../../plugins/utils'
+import { sliceData, easyChangeGender, easyTimestamp, operateAge, timestampToTime } from '../../plugins/utils'
 export default {
   name: 'Student',
   data() {
@@ -246,11 +258,18 @@ export default {
       }
     }
     return {
+      // 页面数据显示条数
+      pageSize: 10,
+      // 当前页数
+      currentPage: 1,
       // 搜索信息
       queryInfo: {
         stuId: ''
       },
-      stuList: [],
+      // 读取到的学生数据
+      studentList: [],
+      // 显示在 table 中的数据
+      showStuList: [],
       total: 0,
       // 控制添加学生对话框的显示
       addDialogVisible: false,
@@ -344,7 +363,9 @@ export default {
         res.data[i].stuGender = easyChangeGender(res.data[i].stuGender)
         res.data[i].stuAge = operateAge(res.data[i].stuBirthday.valueOf())
       }
-      this.stuList = res.data
+      this.studentList = res.data
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showStuList = sliceData(this.studentList, this.currentPage, this.pageSize)
       this.total = res.data.length
     },
     // 查找学生
@@ -355,13 +376,15 @@ export default {
       if (res.code !== 200) {
         return this.$message.error('获取学生列表失败!')
       }
-      this.stuList = []
-      this.stuList.push(res.data)
-      this.stuList[0].utcCreate = timestampToTime(this.stuList[0].utcCreate)
-      this.stuList[0].utcModify = timestampToTime(this.stuList[0].utcModify)
-      this.stuList[0].stuBirthday = easyTimestamp(this.stuList[0].stuBirthday.valueOf())
-      this.stuList[0].stuGender = easyChangeGender(this.stuList[0].stuGender)
-      this.stuList[0].stuAge = operateAge(this.stuList[0].stuBirthday)
+      this.studentList = []
+      this.studentList.push(res.data)
+      this.studentList[0].utcCreate = timestampToTime(this.studentList[0].utcCreate)
+      this.studentList[0].utcModify = timestampToTime(this.studentList[0].utcModify)
+      this.studentList[0].stuBirthday = easyTimestamp(this.studentList[0].stuBirthday.valueOf())
+      this.studentList[0].stuGender = easyChangeGender(this.studentList[0].stuGender)
+      this.studentList[0].stuAge = operateAge(this.studentList[0].stuBirthday)
+      // 定向搜索只可能查询到一条记录
+      this.showStuList = this.studentList
       this.total = res.data.length
     },
     // 监听 switch 开关的改变
@@ -472,6 +495,20 @@ export default {
       }
       this.$message.success('删除学生成功')
       this.getStudentList()
+    },
+    // 当前页面显示数据条数改变事件
+    // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
+    handleSizeChange(val) {
+      this.pageSize = val
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showStuList = sliceData(this.studentList, this.currentPage, this.pageSize)
+    },
+    // 页码改变事件
+    // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
+    handleCurrentChange(val) {
+      this.currentPage = val
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showStuList = sliceData(this.studentList, this.currentPage, this.pageSize)
     }
   }
 }

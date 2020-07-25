@@ -39,7 +39,7 @@
         </el-col>
       </el-row>
       <!--用户列表区域-->
-      <el-table :data="userList" :row-class-name="tableRowClassName" border>
+      <el-table :data="showUsrList" :row-class-name="tableRowClassName" border>
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
@@ -62,7 +62,11 @@
           </template>
         </el-table-column>
         <!--索引列-->
-        <el-table-column type="index" label="序号" width="58px" align="center"/>
+        <el-table-column label="序号" width="58px" align="center">
+          <template slot-scope="scope">
+            <span>{{scope.$index+(currentPage - 1) * pageSize + 1}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="用户名" prop="usrId" align="center" min-width="120px"/>
         <el-table-column label="密码" prop="usrPassword" align="center" min-width="120px"/>
         <el-table-column label="角色" prop="usrType" width="78px" align="center" min-width="100px"/>
@@ -119,14 +123,16 @@
           </template>
         </el-table-column>
       </el-table>
-      <!--分页区域-->
-      <!--@size-change="handleSizeChange"-->
-      <!--@current-change="handleCurrentChange"-->
-      <!--:current-page="queryInfo.pageNum"-->
-      <!--:page-sizes="[1, 2, 5, 10]"-->
-      <!--:page-size="queryInfo.pageSize"-->
-      <!--total, sizes, prev, pager, next, jumper-->
-      <el-pagination layout="total" :total="total"> </el-pagination>
+      <!--显示分页信息-->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[1, 5, 10, 100]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
     </el-card>
     <!--添加用户的对话框-->
     <el-dialog
@@ -194,7 +200,7 @@
 </template>
 
 <script>
-import { timestampToTime } from '../../plugins/utils'
+import { sliceData, timestampToTime } from '../../plugins/utils'
 export default {
   name: 'Users',
   data() {
@@ -217,11 +223,18 @@ export default {
     //   }
     // }
     return {
+      // 页面数据显示条数
+      pageSize: 10,
+      // 当前页数
+      currentPage: 1,
       // 获取用户列表的参数对象
       queryInfo: {
         usrId: ''
       },
+      // 读取到的用户数据
       userList: [],
+      // 显示在 table 中的数据
+      showUsrList: [],
       total: 0,
       // 控制添加用户对话框的显示
       addDialogVisible: false,
@@ -295,6 +308,8 @@ export default {
             : '新用户'
       }
       this.userList = res.data
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showUsrList = sliceData(this.userList, this.currentPage, this.pageSize)
       this.total = res.data.length
     },
     // 查找用户
@@ -313,6 +328,8 @@ export default {
         this.userList[0].lastLogin > 31539467000
           ? timestampToTime(this.userList[0].lastLogin)
           : '新用户'
+      // 定向搜索只可能查询到一条记录
+      this.showUsrList = this.userList
       this.total = res.data.length
     },
     // 监听 pagesize 改变的事件
@@ -439,6 +456,20 @@ export default {
       }
       this.editForm = res.data
       this.editDialogVisible = true
+    },
+    // 当前页面显示数据条数改变事件
+    // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
+    handleSizeChange(val) {
+      this.pageSize = val
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showUsrList = sliceData(this.userList, this.currentPage, this.pageSize)
+    },
+    // 页码改变事件
+    // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
+    handleCurrentChange(val) {
+      this.currentPage = val
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showUsrList = sliceData(this.userList, this.currentPage, this.pageSize)
     }
   }
 }

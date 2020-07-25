@@ -53,7 +53,7 @@
         </el-col>
       </el-row>
       <!--成绩列表区域-->
-      <el-table :data="scoreList" border>
+      <el-table :data="showScoList" border>
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
@@ -76,7 +76,11 @@
           </template>
         </el-table-column>
         <!--索引列-->
-        <el-table-column type="index" label="序号" width="58px" align="center"/>
+        <el-table-column label="序号" width="58px" align="center">
+          <template slot-scope="scope">
+            <span>{{scope.$index+(currentPage - 1) * pageSize + 1}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="学号" prop="stuId" align="center" min-width="100px"/>
         <el-table-column label="课程号" prop="subId" align="center"/>
         <el-table-column label="分数" prop="subScore" align="center"/>
@@ -133,8 +137,16 @@
           </template>
         </el-table-column>
       </el-table>
-      <!--显示总条目数量-->
-      <el-pagination layout="total" :total="total"> </el-pagination>
+      <!--显示分页信息-->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        :page-sizes="[1, 5, 10, 100]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
     </el-card>
     <!--添加课程的对话框-->
     <el-dialog
@@ -202,7 +214,7 @@
 </template>
 
 <script>
-import { operateGPA, timestampToTime } from '../../plugins/utils'
+import { operateGPA, sliceData, timestampToTime } from '../../plugins/utils'
 export default {
   name: 'Scores',
   data() {
@@ -215,14 +227,19 @@ export default {
       }
     }
     return {
+      // 页面数据显示条数
+      pageSize: 10,
+      // 当前页数
+      currentPage: 1,
       // 搜索信息
       queryInfo: {
         stuId: '',
         subId: ''
       },
+      // 读取到的成绩数据
       scoreList: [],
-      studentList: [],
-      subjectList: [],
+      // 显示在 table 中的数据
+      showScoList: [],
       // 添加课程的表单数据
       addForm: {
         stuId: '',
@@ -279,6 +296,8 @@ export default {
         res.data[i].subGPA = operateGPA(res.data[i].subScore)
       }
       this.scoreList = res.data
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showScoList = sliceData(this.scoreList, this.currentPage, this.pageSize)
       this.total = res.data.length
     },
     // 查找成绩
@@ -295,6 +314,8 @@ export default {
         this.scoreList[0].utcCreate = timestampToTime(this.scoreList[0].utcCreate)
         this.scoreList[0].utcModify = timestampToTime(this.scoreList[0].utcModify)
         this.scoreList[0].subGPA = operateGPA(this.scoreList[0].subScore)
+        // 定向搜索只可能查询到一条记录
+        this.showScoList = this.scoreList
         this.total = res.data.length
       } else if (this.queryInfo.stuId === '' && this.queryInfo.subId !== '') {
         const { data: res } = await this.$http.get(
@@ -309,6 +330,8 @@ export default {
           res.data[i].subGPA = operateGPA(res.data[i].subScore)
         }
         this.scoreList = res.data
+        // 单项搜索多条数据
+        this.showScoList = this.scoreList
         this.total = res.data.length
       } else if (this.queryInfo.stuId !== '' && this.queryInfo.subId === '') {
         const { data: res } = await this.$http.get(
@@ -323,6 +346,8 @@ export default {
           res.data[i].subGPA = operateGPA(res.data[i].subScore)
         }
         this.scoreList = res.data
+        // 单项搜索多条数据
+        this.showScoList = this.scoreList
         this.total = res.data.length
       } else {
         this.getScoreList()
@@ -431,6 +456,20 @@ export default {
       }
       this.$message.success('删除成绩成功')
       this.getScoreList()
+    },
+    // 当前页面显示数据条数改变事件
+    // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
+    handleSizeChange(val) {
+      this.pageSize = val
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showScoList = sliceData(this.scoreList, this.currentPage, this.pageSize)
+    },
+    // 页码改变事件
+    // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
+    handleCurrentChange(val) {
+      this.currentPage = val
+      // 根据当前页数和每页显示数控大小截取数据
+      this.showScoList = sliceData(this.scoreList, this.currentPage, this.pageSize)
     }
   }
 }
