@@ -18,12 +18,12 @@
                   <el-input
                     v-model="queryInfo.stuId"
                     placeholder="请输入学号"
-                    @clear="selectSubject"
+                    @clear="selectScore"
                     clearable>
                     <el-button
                       slot="append"
                       icon="el-icon-search"
-                      @click="selectSubject"
+                      @click="selectScore"
                     />
                   </el-input>
                 </el-form-item>
@@ -33,12 +33,12 @@
                   <el-input
                     v-model="queryInfo.subId"
                     placeholder="请输入课程号"
-                    @clear="selectSubject"
+                    @clear="selectScore"
                     clearable>
                     <el-button
                       slot="append"
                       icon="el-icon-search"
-                      @click="selectSubject"
+                      @click="selectScore"
                     />
                   </el-input>
                 </el-form-item>
@@ -316,7 +316,7 @@ export default {
       this.total = res.data.length
     },
     // 查找成绩
-    async selectSubject() {
+    async selectScore() {
       if (this.queryInfo.stuId !== '' && this.queryInfo.subId !== '') {
         const { data: res } = await this.$http.get('score/selectAdminById', {
           params: this.queryInfo
