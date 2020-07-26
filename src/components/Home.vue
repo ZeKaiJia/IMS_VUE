@@ -142,7 +142,7 @@ export default {
           children: [{
             id: 61,
             authName: '综合数据',
-            path: 'status'
+            path: 'statuses'
           }]
         }
       ],

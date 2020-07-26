@@ -11,6 +11,7 @@ import Subjects from '../components/subject/Subjects'
 import Scores from '../components/score/Scores'
 import StuTranscripts from '../components/score/StuTranscripts'
 import SubTranscripts from '../components/score/SubTranscripts'
+import Statuses from '../components/status/Statuses'
 
 Vue.use(Router)
 
@@ -32,7 +33,8 @@ const router = new Router({
         { path: '/subjects', component: Subjects },
         { path: '/scores', component: Scores },
         { path: '/stuTranscripts', component: StuTranscripts },
-        { path: '/subTranscripts', component: SubTranscripts }
+        { path: '/subTranscripts', component: SubTranscripts },
+        { path: '/statuses', component: Statuses }
       ]
     }
   ]

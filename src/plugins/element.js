@@ -32,7 +32,8 @@ import {
   Image,
   Backtop,
   Loading,
-  Popover
+  Popover,
+  Carousel
 } from 'element-ui'
 import VueLazyload from 'vue-lazyload'
 
@@ -67,6 +68,7 @@ Vue.use(Image)
 Vue.use(Backtop)
 Vue.use(Loading)
 Vue.use(Popover)
+Vue.use(Carousel)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
