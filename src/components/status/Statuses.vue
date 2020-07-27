@@ -39,7 +39,8 @@ export default {
   // DOM初始化完毕后的操作
   async mounted () {
     // 获取日期热力图
-    const date = getVirtualData(2020)
+    const date = getVirtualData(2020).data
+    const current = getVirtualData(2020).current
     // 基于准备好的dom，初始化echarts实例
     const userChart = echarts.init(document.getElementById('user'), 'light')
     const totalChart = echarts.init(document.getElementById('total'), 'light')
@@ -119,7 +120,7 @@ export default {
 
       title: {
         top: 30,
-        text: '2020项目开发进度',
+        text: '2020项目开发进度 截至' + current,
         subtext: '测试数据',
         left: 'center',
         textStyle: {
@@ -209,7 +210,14 @@ export default {
     function getVirtualData(year) {
       year = year || '2020'
       const date = +echarts.number.parseDate(year + '-01-01')
-      const end = +echarts.number.parseDate(year + '-07-26')
+      const now = new Date()
+      const mon = now.getMonth() + 1
+      const month = mon < 10 ? '-0' + mon : '-' + mon
+      const currentMonth = mon < 10 ? '0' + mon : '' + mon
+      const da = now.getDate()
+      const day = da < 10 ? '-0' + da : '-' + da
+      console.log(month + day)
+      const end = +echarts.number.parseDate(year + month + day)
       const dayTime = 3600 * 24 * 1000
       const data = []
       for (let time = date; time < end; time += dayTime) {
@@ -219,7 +227,7 @@ export default {
             ? Math.floor(Math.random() * 15) : 0
         ])
       }
-      return data
+      return { data: data, current: currentMonth + day }
     }
   },
   methods: {

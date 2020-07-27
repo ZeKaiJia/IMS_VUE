@@ -33,7 +33,9 @@ import {
   Backtop,
   Loading,
   Popover,
-  Carousel
+  Carousel,
+  CarouselItem,
+  Divider
 } from 'element-ui'
 import VueLazyload from 'vue-lazyload'
 
@@ -69,6 +71,8 @@ Vue.use(Backtop)
 Vue.use(Loading)
 Vue.use(Popover)
 Vue.use(Carousel)
+Vue.use(CarouselItem)
+Vue.use(Divider)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

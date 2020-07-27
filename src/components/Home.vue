@@ -4,10 +4,10 @@
     <el-header>
       <div>
         <img style="margin-left: 10px" src="../assets/img/avater.png" alt="" />
-        <span>综合信息管理系统</span>
+        <span style="cursor: default;">综合信息管理系统</span>
       </div>
       <div>
-        <span>{{this.showUser}}</span>
+        <span style="cursor: default">{{this.showUser}}</span>
         <div>
           <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>
         </div>
@@ -69,7 +69,7 @@
           <router-view />
         </el-main>
         <el-footer height="30px">
-          <div style="display: flex; justify-content: center">© 2020 · ims.cool 版权所有 · 浙ICP备20021194号-1
+          <div style="display: flex; justify-content: center; cursor: default">© 2020 · ims.cool 版权所有 · 浙ICP备20021194号-1
             <img src="https://img.alicdn.com/tfs/TB1Z.avK.z1gK0jSZLeXXb9kVXa-200-200.png"
                  style="width: 24px; height: 24px; margin-top: 3px; margin-left: 8px"/>
           </div>

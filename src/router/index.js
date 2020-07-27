@@ -12,7 +12,7 @@ import Scores from '../components/score/Scores'
 import StuTranscripts from '../components/score/StuTranscripts'
 import SubTranscripts from '../components/score/SubTranscripts'
 import Statuses from '../components/status/Statuses'
-
+import NotFound404 from '../components/NotFound404'
 Vue.use(Router)
 
 // eslint-disable-next-line no-undef
@@ -20,6 +20,7 @@ const router = new Router({
   routes: [
     { path: '/', redirect: '/login' },
     { path: '/login', component: Login },
+    { path: '/404', component: NotFound404 },
     {
       path: '/home',
       component: Home,
