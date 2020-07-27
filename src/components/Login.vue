@@ -82,9 +82,9 @@ export default {
           return this.$message.error('用户名或密码错误，请重试')
         } else {
           window.sessionStorage.setItem('user', result.data.usrId)
-          this.$message.success('欢迎您，' + result.data.usrId)
-          await this.$router.push('/home')
           window.sessionStorage.setItem('token', result.data.utcCreate)
+          this.$message.success('欢迎您，' + result.data.usrId)
+          await this.$router.push({ path: '/home' }, () => {}, () => {})
         }
       })
     }
@@ -93,76 +93,76 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.login-container {
-  background-color: #2b4b6b;
-  height: 100%;
-}
+  .login-container {
+    background-color: #2b4b6b;
+    height: 100%;
+  }
 
-.login-box {
-  width: 600px;
-  height: 360px;
-  background-color: rgb(191, 212, 243);
-  border-radius: 15px;
-  position: absolute;
-  left: 50%;
-  top: 55%;
-  transform: translate(-50%, -50%);
-
-  .avater-box {
-    height: 130px;
-    width: 130px;
-    border: 1px solid #eee;
-    border-radius: 50%;
-    padding: 6px;
-    box-shadow: 0 0 10px #ddd;
+  .login-box {
+    width: 600px;
+    height: 360px;
+    background-color: rgb(191, 212, 243);
+    border-radius: 15px;
     position: absolute;
     left: 50%;
-    transform: translate(-50%, -80%);
-    background-color: #fff;
+    top: 55%;
+    transform: translate(-50%, -50%);
 
-    img {
-      width: 100%;
-      height: 100%;
+    .avater-box {
+      height: 130px;
+      width: 130px;
+      border: 1px solid #eee;
       border-radius: 50%;
-      background-color: #eee;
+      padding: 6px;
+      box-shadow: 0 0 10px #ddd;
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -80%);
+      background-color: #fff;
+
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: #eee;
+      }
+    }
+
+    .login-title {
+      color: black;
+      margin-top: 36px;
+      font-size: 40px;
+      font-weight: 200;
+      text-align: center;
+      span {
+        border-bottom: 1.5px solid rgb(252, 114, 89);
+      }
+    }
+
+    .form-item {
+      margin-top: 40px;
+      text-align: center;
+      .form-input {
+        border: 0;
+        background: none;
+        outline: 0;
+        transition: 0.2s;
+        width: 320px;
+      }
+    }
+
+    .form-button {
+      margin-top: 30px;
+      text-align: center;
     }
   }
-
-  .login-title {
-    color: black;
-    margin-top: 36px;
-    font-size: 40px;
-    font-weight: 200;
-    text-align: center;
-    span {
-      border-bottom: 1.5px solid rgb(252, 114, 89);
+    .el-form /deep/ .el-form-item__error {
+      color: #f56c6c;
+      font-size: 12px;
+      line-height: 1;
+      padding-top: 4px;
+      position: absolute;
+      top: 110%;
+      left: 140px !important;
     }
-  }
-
-  .form-item {
-    margin-top: 40px;
-    text-align: center;
-    .form-input {
-      border: 0;
-      background: none;
-      outline: 0;
-      transition: 0.2s;
-      width: 320px;
-    }
-  }
-
-  .form-button {
-    margin-top: 30px;
-    text-align: center;
-  }
-}
-z.el-form-item__error {
-  color: #f56c6c;
-  font-size: 12px;
-  line-height: 1;
-  padding-top: 4px;
-  position: absolute;
-  top: 116%;
-  left: 140px;
-}
 </style>

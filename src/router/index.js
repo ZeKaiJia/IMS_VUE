@@ -40,14 +40,20 @@ const router = new Router({
     }
   ]
 })
-// // 挂载路由导航守卫
-// router.beforeEach((to, from, next) => {
-//   if (to.path === '/login') return next()
-//   // 从sessionStorage中获取保存的token
-//   const tokenStr = window.sessionStorage.getItem('token')
-//   // 没有token强制跳转
-//   if (!tokenStr) return next('/login')
-//   next()
-// })
+// 挂载路由导航守卫
+router.beforeEach((to, from, next) => {
+  // 从sessionStorage中获取保存的token
+  const tokenStr = window.sessionStorage.getItem('token')
+  if (to.path === '/login') {
+    return next()
+  } else {
+    // 没有token强制跳转
+    if (!tokenStr) {
+      return next('/login')
+    } else {
+      next()
+    }
+  }
+})
 
 export default router

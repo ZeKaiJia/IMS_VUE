@@ -5,12 +5,25 @@
     </el-row>
     <el-row type="flex" justify="center">
       <el-carousel :interval="4000" arrow="always" height="560px" style="width: 1150px">
-        <el-carousel-item v-for="item in src" :key="item">
+        <el-carousel-item
+          v-for="item in src"
+          :key="item"
+          v-loading="loading"
+        >
           <el-image
             :src="item"
             style="height: 580px"
             fit="cover"
-          />
+            @load="loadSuccess"
+            @error="loadError"
+          >
+            <div slot="error" class="image-slot"
+                 style="display: flex; justify-content: center; align-items: center;
+                 height: 100%; width: 1150px; flex-flow: column">
+              <span class="el-icon-picture-outline" style="width: 48px; height: 48px; font-size: 48px"/>
+              <span style="margin-top: 12px">加载失败</span>
+            </div>
+          </el-image>
         </el-carousel-item>
       </el-carousel>
     </el-row>
@@ -39,17 +52,31 @@ export default {
   data() {
     return {
       src: [
-        'http://s1.wailian.download/2020/07/27/school1.jpg',
         'http://s1.wailian.download/2020/07/27/school2.jpg',
-        'http://s1.wailian.download/2020/07/27/school3.jpg'
-      ]
+        'http://s1.wailian.download/2020/07/27/school3.jpg',
+        'http://s1.wailian.download/2020/07/27/school1.jpg'
+      ],
+      loading: true
     }
+  },
+  created() {
+    window.sessionStorage.setItem('activePath', '/welcome')
+    this.$parent.activePath = '/welcome'
+    console.log(this.$parent)
   },
   methods: {
     jump(activePath) {
       window.sessionStorage.setItem('activePath', activePath)
-      this.activePath = activePath
+      this.$parent.activePath = activePath
       this.$router.push(activePath)
+    },
+    // 图片加载成功
+    loadSuccess() {
+      this.loading = false
+    },
+    // 图片加载失败
+    loadError() {
+      this.loading = false
     }
   }
 }

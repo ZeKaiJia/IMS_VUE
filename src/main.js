@@ -14,7 +14,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 // 配置请求的根路径
-axios.defaults.baseURL = 'http://127.0.0.1:8080'
+axios.defaults.baseURL = 'http://127.0.0.1:9988'
 // axios请求拦截
 axios.interceptors.request.use((config) => {
   config.headers.Authorization = window.sessionStorage.getItem('token')
