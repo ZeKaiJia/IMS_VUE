@@ -13,7 +13,7 @@
         <el-col :span="8">
           <el-input
             placeholder="请输入用户名"
-            v-model="queryInfo.usrId"
+            v-model="queryInfo.usrName"
             @clear="getUserList"
             clearable
           >
@@ -41,13 +41,28 @@
       <!--用户列表区域-->
       <el-table
         :data="showUsrList"
-        :row-class-name="tableRowClassName"
         :header-cell-style="{background:'#eef1f6',color:'#606266'}"
         border
       >
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
+            <el-row>
+              <el-tag type="info" effect="plain">
+                联系电话
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.usrPhone}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                电子邮箱
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.usrEmail}}
+              </el-tag>
+            </el-row>
             <el-row>
               <el-tag type="info" effect="plain">
                 创建时间
@@ -64,6 +79,22 @@
                 {{scope.row.utcModify}}
               </el-tag>
             </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                修改人
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                备注
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.remark === '' ? '空' : scope.row.remark}}
+              </el-tag>
+            </el-row>
           </template>
         </el-table-column>
         <!--索引列-->
@@ -72,14 +103,14 @@
             <span>{{scope.$index+(currentPage - 1) * pageSize + 1}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="用户名" prop="usrId" align="center" min-width="120px"/>
-        <el-table-column label="密码" prop="usrPassword" align="center" min-width="120px"/>
-        <el-table-column label="角色" prop="usrType" width="78px" align="center" min-width="100px"/>
+        <el-table-column label="用户名" prop="usrName" align="center"/>
+        <el-table-column label="密码" prop="usrPassword" align="center"/>
+        <el-table-column label="昵称" prop="usrNick" width="78px" align="center"/>
         <el-table-column label="最近登录时间" prop="lastLogin" align="center" min-width="190px"/>
         <el-table-column label="状态" align="center" width="180px">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.isReal"
+              v-model="scope.row.valid"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="开启"
@@ -104,7 +135,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 size="mini"
-                @click="showEditDialog(scope.row.usrId)"
+                @click="showEditDialog(scope.row.usrName)"
                 round
               />
             </el-tooltip>
@@ -121,7 +152,7 @@
                 type="danger"
                 icon="el-icon-delete"
                 size="mini"
-                @click="removeUserById(scope.row.usrId)"
+                @click="removeUserByName(scope.row.usrName)"
                 round
               />
             </el-tooltip>
@@ -151,16 +182,25 @@
         :model="addForm"
         :rules="addFormRules"
         ref="addFormRef"
-        label-width="80px"
+        label-width="100px"
       >
-        <el-form-item label="用户名" prop="usrId">
-          <el-input v-model="addForm.usrId" />
+        <el-form-item label="用户名" prop="usrName">
+          <el-input v-model="addForm.usrName" />
         </el-form-item>
         <el-form-item label="密码" prop="usrPassword">
           <el-input v-model="addForm.usrPassword" />
         </el-form-item>
-        <el-form-item label="角色" prop="usrType">
-          <el-input v-model="addForm.usrType" />
+        <el-form-item label="昵称" prop="usrNick">
+          <el-input v-model="addForm.usrNick" />
+        </el-form-item>
+        <el-form-item label="联系电话" prop="usrPhone">
+          <el-input v-model="addForm.usrPhone" />
+        </el-form-item>
+        <el-form-item label="电子邮箱" prop="usrEmail">
+          <el-input v-model="addForm.usrEmail" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="addForm.remark" />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -181,16 +221,25 @@
         :model="editForm"
         :rules="editFormRules"
         ref="editFormRef"
-        label-width="80px"
+        label-width="100px"
       >
-        <el-form-item label="用户名" prop="usrId">
-          <el-input v-model="editForm.usrId" disabled />
+        <el-form-item label="用户名" prop="usrName">
+          <el-input v-model="editForm.usrName" disabled/>
         </el-form-item>
         <el-form-item label="密码" prop="usrPassword">
           <el-input v-model="editForm.usrPassword" />
         </el-form-item>
-        <el-form-item label="角色" prop="usrType">
-          <el-input v-model="editForm.usrType" />
+        <el-form-item label="昵称" prop="usrNick">
+          <el-input v-model="editForm.usrNick" />
+        </el-form-item>
+        <el-form-item label="联系电话" prop="usrPhone">
+          <el-input v-model="editForm.usrPhone" />
+        </el-form-item>
+        <el-form-item label="电子邮箱" prop="usrEmail">
+          <el-input v-model="editForm.usrEmail" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="editForm.remark" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -205,28 +254,28 @@
 </template>
 
 <script>
-import { sliceData, timestampToTime } from '../../plugins/utils'
+import { sliceData, timestampToTime, checkError } from '../../plugins/utils'
 export default {
   name: 'Users',
   data() {
-    // // 验证邮箱
-    // var checkEmail = (rule, value, callback) => {
-    //   const regEmail = /^([a-zA-z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
-    //   if (regEmail.test(value)) {
-    //     return callback()
-    //   } else {
-    //     callback(new Error('请输入合法的邮箱'))
-    //   }
-    // }
-    // // 验证手机号
-    // var checkMobile = (rule, value, callback) => {
-    //   const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
-    //   if (regMobile.test(value)) {
-    //     return callback()
-    //   } else {
-    //     callback(new Error('请输入合法的手机号'))
-    //   }
-    // }
+    // 验证邮箱
+    var checkEmail = (rule, value, callback) => {
+      const regEmail = /^([a-zA-z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
+      if (regEmail.test(value)) {
+        return callback()
+      } else {
+        callback(new Error('请输入合法的邮箱'))
+      }
+    }
+    // 验证手机号
+    var checkMobile = (rule, value, callback) => {
+      const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      if (regMobile.test(value)) {
+        return callback()
+      } else {
+        callback(new Error('请输入合法的手机号'))
+      }
+    }
     return {
       // 页面数据显示条数
       pageSize: 10,
@@ -234,7 +283,7 @@ export default {
       currentPage: 1,
       // 获取用户列表的参数对象
       queryInfo: {
-        usrId: ''
+        usrName: ''
       },
       // 读取到的用户数据
       userList: [],
@@ -247,34 +296,47 @@ export default {
       editDialogVisible: false,
       // 添加用户的表单数据
       addForm: {
-        usrId: '',
+        usrName: '',
         usrPassword: '',
-        usrType: ''
+        usrNick: '',
+        usrPhone: '',
+        usrEmail: '',
+        remark: '',
+        modifyBy: ''
       },
-      // 查询用户的表单数据
+      // 修改用户的表单数据
       editForm: {
-        usrId: '',
+        usrName: '',
         usrPassword: '',
-        usrType: ''
+        usrNick: '',
+        usrPhone: '',
+        usrEmail: '',
+        remark: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
-        usrId: [
-          { required: true, message: '请输入用户ID', trigger: 'blur' },
+        usrName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
         ],
         usrPassword: [
           { required: true, message: '请输入用户密码', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
         ],
-        usrType: [
-          { required: true, message: '请输入用户角色类型', trigger: 'blur' },
-          {
-            type: 'enum',
-            enum: ['管理员', '教师', '学生'],
-            message: '角色类型必须为管理员、教师或学生',
-            trigger: 'blur'
-          }
+        usrNick: [
+          { required: true, message: '请输入用户昵称', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+        ],
+        usrPhone: [
+          { required: true, message: '请输入用户联系电话', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ],
+        usrEmail: [
+          { required: true, message: '请输入用户电子邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        remark: [
+          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       editFormRules: {
@@ -282,14 +344,20 @@ export default {
           { required: true, message: '请输入用户密码', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
         ],
-        usrType: [
-          { required: true, message: '请输入用户角色类型', trigger: 'blur' },
-          {
-            type: 'enum',
-            enum: ['管理员', '教师', '学生'],
-            message: '角色类型必须为管理员、教师或学生',
-            trigger: 'blur'
-          }
+        usrNick: [
+          { required: true, message: '请输入用户昵称', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+        ],
+        usrPhone: [
+          { required: true, message: '请输入用户联系电话', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ],
+        usrEmail: [
+          { required: true, message: '请输入用户电子邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        remark: [
+          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       }
     }
@@ -300,9 +368,9 @@ export default {
   methods: {
     // 获取用户列表
     async getUserList() {
-      const { data: res } = await this.$http.get('login/selectAdmin')
+      const { data: res } = await this.$http.get('user/selectAll')
       if (res.code !== 200) {
-        return this.$message.error('获取用户列表失败!')
+        return this.$message.error('获取用户列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
         res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
@@ -319,11 +387,11 @@ export default {
     },
     // 查找用户
     async selectUser() {
-      const { data: res } = await this.$http.get('login/selectAdminById', {
+      const { data: res } = await this.$http.get('user/selectByName', {
         params: this.queryInfo
       })
       if (res.code !== 200) {
-        return this.$message.error('获取用户列表失败!')
+        return this.$message.error('获取用户列表失败!' + checkError(res))
       }
       this.userList = []
       this.userList.push(res.data)
@@ -349,22 +417,22 @@ export default {
     },
     // 监听 switch 开关的改变
     async userStateChange(userInfo) {
-      if (userInfo.isReal === false) {
+      if (userInfo.valid === false) {
         const { data: res } = await this.$http.post(
-          `login/delete?usrId=${userInfo.usrId}`
+          `user/disable?usrName=${userInfo.usrName}`
         )
         if (res.code !== 200) {
-          return this.$message.error('锁定用户失败')
+          return this.$message.error('锁定用户失败' + checkError(res))
         } else {
           this.getUserList()
           return this.$message.success('锁定用户成功')
         }
       } else {
         const { data: res } = await this.$http.post(
-          `login/reDelete?usrId=${userInfo.usrId}`
+          `user/recover?usrName=${userInfo.usrName}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启用户失败')
+          return this.$message.error('开启用户失败' + checkError(res))
         } else {
           this.getUserList()
           return this.$message.success('开启用户成功')
@@ -383,12 +451,12 @@ export default {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
         const { data: res } = await this.$http.post(
-          'login/insert',
+          'user/insert',
           this.addForm
         )
         if (res.code !== 200) {
           this.addDialogVisible = false
-          return this.$message.error('ID已存在，添加用户失败')
+          return this.$message.error('添加用户失败' + checkError(res))
         } else {
           this.addDialogVisible = false
           this.$message.success('添加用户成功')
@@ -399,25 +467,23 @@ export default {
     // 点击按钮修改用户信息
     editUser() {
       this.$refs.editFormRef.validate(async (valid) => {
-        console.log(this.editForm.usrType)
         if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
         const { data: res } = await this.$http.post(
-          'login/update',
+          'user/update',
           this.editForm
         )
         if (res.code !== 200) {
           this.editDialogVisible = false
-          return this.$message.error('修改用户失败')
+          return this.$message.error('修改用户失败' + checkError(res))
         } else {
           this.editDialogVisible = false
           this.$message.success('修改用户成功')
-          console.log(res)
         }
         this.getUserList()
       })
     },
     // 点击按钮删除用户信息
-    async removeUserById(usrId) {
+    async removeUserByName(usrName) {
       // 弹框询问
       const confirmResult = await this.$confirm(
         '此操作将永久删除该用户, 是否继续?',
@@ -433,31 +499,31 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('已撤回删除操作')
       }
-      const { data: res } = await this.$http.post(`login/save?usrId=${usrId}`)
+      const { data: res } = await this.$http.post(`user/delete?usrName=${usrName}`)
       if (res.code !== 200) {
-        return this.$message.error('删除用户失败')
+        return this.$message.error('删除用户失败' + checkError(res))
       }
       this.$message.success('删除用户成功')
       this.getUserList()
     },
-    // 凸显身份识别
-    tableRowClassName({ row, rowIndex }) {
-      if (row.usrType === '管理员') {
-        return 'admin-row'
-      } else if (row.usrType === '学生') {
-        return 'stu-row'
-      } else if (row.usrType === '教师') {
-        return 'tea-row'
-      }
-      return ''
-    },
+    // // 凸显身份识别
+    // tableRowClassName({ row, rowIndex }) {
+    //   if (row.usrType === '管理员') {
+    //     return 'admin-row'
+    //   } else if (row.usrType === '学生') {
+    //     return 'stu-row'
+    //   } else if (row.usrType === '教师') {
+    //     return 'tea-row'
+    //   }
+    //   return ''
+    // },
     // 监听添加用户对话框的点击事件
-    async showEditDialog(usrId) {
+    async showEditDialog(usrName) {
       const { data: res } = await this.$http.get(
-        `login/selectAdminById?usrId=${usrId}`
+        `user/selectByName?usrName=${usrName}`
       )
       if (res.code !== 200) {
-        return this.$message.error('查询用户信息失败')
+        return this.$message.error('查询用户信息失败' + checkError(res))
       }
       this.editForm = res.data
       this.editDialogVisible = true

@@ -50,7 +50,7 @@ export default {
     hotChart.showLoading()
     // 获取用户数据
     const data = [0, 0, 0]
-    const { data: usrRes } = await this.$http.get('login/selectAdmin')
+    const { data: usrRes } = await this.$http.get('login/selectAll')
     if (usrRes.code !== 200) {
       return this.$message.error('获取用户列表失败!')
     }
@@ -81,19 +81,19 @@ export default {
     })
     // 获取总体数据
     const totalData = [usrRes.data.length, 0, 0, 0]
-    const { data: stuRes } = await this.$http.get('student/selectAdmin')
+    const { data: stuRes } = await this.$http.get('student/selectAll')
     if (stuRes.code !== 200) {
       return this.$message.error('获取学生列表失败!')
     } else {
       totalData[1] = stuRes.data.length
     }
-    const { data: subRes } = await this.$http.get('subject/selectAdmin')
+    const { data: subRes } = await this.$http.get('subject/selectAll')
     if (stuRes.code !== 200) {
       return this.$message.error('获取课程列表失败!')
     } else {
       totalData[2] = subRes.data.length
     }
-    const { data: scoRes } = await this.$http.get('score/selectAdmin')
+    const { data: scoRes } = await this.$http.get('score/selectAll')
     if (scoRes.code !== 200) {
       return this.$message.error('获取成绩列表失败!')
     } else {

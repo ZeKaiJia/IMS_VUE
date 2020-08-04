@@ -17,11 +17,11 @@
         ref="loginFormRef"
       >
         <!--用户名-->
-        <el-form-item class="form-item" prop="usrId">
+        <el-form-item class="form-item" prop="usrName">
           <el-input
             class="form-input"
             placeholder="账号"
-            v-model="loginForm.usrId"
+            v-model="loginForm.usrName"
             prefix-icon="iconfont icon-icon-test35"
           />
         </el-form-item>
@@ -50,12 +50,12 @@ export default {
   data() {
     return {
       loginForm: {
-        usrId: '',
+        usrName: '',
         usrPassword: ''
       },
       loginFormRules: {
-        usrId: [
-          { required: true, message: '请输入用户ID', trigger: 'blur' },
+        usrName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
         ],
         usrPassword: [
@@ -75,15 +75,15 @@ export default {
         if (!valid) return this.$message.error('出错啦，再试一次')
         // eslint-disable-next-line
         const { data: result } = await this.$http.post(
-          'login/login',
+          'user/login',
           this.loginForm
         )
         if (result.code !== 200) {
           return this.$message.error('用户名或密码错误，请重试')
         } else {
-          window.sessionStorage.setItem('user', result.data.usrId)
+          window.sessionStorage.setItem('user', result.data.usrNick)
           window.sessionStorage.setItem('token', result.data.utcCreate)
-          this.$message.success('欢迎您，' + result.data.usrId)
+          this.$message.success('欢迎您，' + result.data.usrName)
           await this.$router.push({ path: '/home' }, () => {}, () => {})
         }
       })

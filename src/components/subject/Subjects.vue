@@ -67,6 +67,22 @@
                 {{scope.row.utcModify}}
               </el-tag>
             </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                修改人
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                备注
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.remark === '' ? '空' : scope.row.remark}}
+              </el-tag>
+            </el-row>
           </template>
         </el-table-column>
         <el-table-column label="序号" width="58px" align="center">
@@ -81,7 +97,7 @@
         <el-table-column label="状态" align="center" width="180px">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.isReal"
+              v-model="scope.row.valid"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="开启"
@@ -167,6 +183,9 @@
         <el-form-item label="学分" prop="subCredit">
           <el-input v-model="addForm.subCredit" oninput="value=value.replace(/[^\d.]/g,'')"/>
         </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="addForm.remark" />
+        </el-form-item>
       </el-form>
       <!--底部按钮区-->
       <span slot="footer" class="dialog-footer">
@@ -200,6 +219,9 @@
         <el-form-item label="学分" prop="subCredit">
           <el-input v-model="editForm.subCredit" oninput="value=value.replace(/[^\d.]/g,'')"/>
         </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="editForm.remark" placeholder="请输入备注"/>
+        </el-form-item>
       </el-form>
       <!--底部按钮区-->
       <span slot="footer" class="dialog-footer">
@@ -213,7 +235,7 @@
 </template>
 
 <script>
-import { sliceData, timestampToTime } from '../../plugins/utils'
+import { checkError, sliceData, timestampToTime } from '../../plugins/utils'
 export default {
   name: 'Subjects',
   data() {
@@ -235,14 +257,17 @@ export default {
         subId: '',
         subName: '',
         subTeacherId: '',
-        subCredit: ''
+        subCredit: '',
+        remark: '',
+        modifyBy: ''
       },
       // 修改课程的表单数据
       editForm: {
         subId: '',
         subName: '',
         subTeacherId: '',
-        subCredit: ''
+        subCredit: '',
+        remark: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
@@ -260,6 +285,9 @@ export default {
         ],
         subCredit: [
           { required: true, message: '请输入数字类型的课程学分', trigger: 'blur' }
+        ],
+        remark: [
+          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       editFormRules: {
@@ -273,6 +301,9 @@ export default {
         ],
         subCredit: [
           { required: true, message: '请输入数字类型的课程学分', trigger: 'blur' }
+        ],
+        remark: [
+          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       total: 0,
@@ -288,9 +319,9 @@ export default {
   methods: {
     // 获取课程列表
     async getSubjectList() {
-      const { data: res } = await this.$http.get('subject/selectAdmin')
+      const { data: res } = await this.$http.get('subject/selectAll')
       if (res.code !== 200) {
-        return this.$message.error('获取用户列表失败!')
+        return this.$message.error('获取用户列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
         res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
@@ -303,11 +334,11 @@ export default {
     },
     // 查找课程
     async selectSubject() {
-      const { data: res } = await this.$http.get('subject/selectAdminById', {
+      const { data: res } = await this.$http.get('subject/selectById', {
         params: this.queryInfo
       })
       if (res.code !== 200) {
-        return this.$message.error('获取课程列表失败!')
+        return this.$message.error('获取课程列表失败!' + checkError(res))
       }
       this.subjectList = []
       this.subjectList.push(res.data)
@@ -319,22 +350,22 @@ export default {
     },
     // 监听 switch 开关的改变
     async subjectStateChange(subjectInfo) {
-      if (subjectInfo.isReal === false) {
+      if (subjectInfo.valid === false) {
         const { data: res } = await this.$http.post(
-          `subject/delete?subId=${subjectInfo.subId}`
+          `subject/disable?subId=${subjectInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('锁定课程失败')
+          return this.$message.error('锁定课程失败' + checkError(res))
         } else {
           this.getSubjectList()
           return this.$message.success('锁定课程成功')
         }
       } else {
         const { data: res } = await this.$http.post(
-          `subject/reDelete?subId=${subjectInfo.subId}`
+          `subject/recover?subId=${subjectInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启课程失败')
+          return this.$message.error('开启课程失败' + checkError(res))
         } else {
           this.getSubjectList()
           return this.$message.success('开启课程成功')
@@ -352,10 +383,10 @@ export default {
     // 监听修改课程对话框的点击事件
     async showEditDialog(subId) {
       const { data: res } = await this.$http.get(
-        `subject/selectAdminById?subId=${subId}`
+        `subject/selectById?subId=${subId}`
       )
       if (res.code !== 200) {
-        return this.$message.error('查询课程信息失败')
+        return this.$message.error('查询课程信息失败' + checkError(res))
       }
       this.editForm = res.data
       this.editDialogVisible = true
@@ -370,7 +401,7 @@ export default {
         )
         if (res.code !== 200) {
           this.addDialogVisible = false
-          return this.$message.error('添加课程失败')
+          return this.$message.error('添加课程失败' + checkError(res))
         } else {
           this.addDialogVisible = false
           this.$message.success('添加课程成功')
@@ -388,7 +419,7 @@ export default {
         )
         if (res.code !== 200) {
           this.editDialogVisible = false
-          return this.$message.error('修改课程失败')
+          return this.$message.error('修改课程失败' + checkError(res))
         } else {
           this.editDialogVisible = false
           this.$message.success('修改课程成功')
@@ -413,9 +444,9 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('已撤回删除操作')
       }
-      const { data: res } = await this.$http.post(`subject/save?subId=${subId}`)
+      const { data: res } = await this.$http.post(`subject/delete?subId=${subId}`)
       if (res.code !== 200) {
-        return this.$message.error('删除课程失败')
+        return this.$message.error('删除课程失败！' + checkError(res))
       }
       this.$message.success('删除课程成功')
       this.getSubjectList()

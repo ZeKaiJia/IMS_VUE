@@ -55,18 +55,10 @@
           <template slot-scope="scope">
             <el-row>
               <el-tag type="info" effect="plain">
-                创建时间
+                联系电话
               </el-tag>
               <el-tag type="info" effect="plain">
-                {{scope.row.utcCreate}}
-              </el-tag>
-            </el-row>
-            <el-row>
-              <el-tag type="info" effect="plain">
-                修改时间
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.utcModify}}
+                {{scope.row.stuPhone}}
               </el-tag>
             </el-row>
             <el-row>
@@ -93,6 +85,38 @@
                 {{scope.row.stuAge}}
               </el-tag>
             </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                创建时间
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.utcCreate}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                修改时间
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.utcModify}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                修改人
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                备注
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.remark === '' ? '空' : scope.row.remark}}
+              </el-tag>
+            </el-row>
           </template>
         </el-table-column>
         <!--索引列-->
@@ -107,7 +131,7 @@
         <el-table-column label="状态" align="center" width="180px">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.isReal"
+              v-model="scope.row.valid"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="开启"
@@ -182,7 +206,7 @@
         label-width="70px"
       >
         <el-form-item label="学号" prop="stuId">
-          <el-input v-model="addForm.stuId" oninput="value=value.replace(/[^\d.]/g,'')"/>
+          <el-input v-model="addForm.stuId"/>
         </el-form-item>
         <el-form-item label="姓名" prop="stuName">
           <el-input v-model="addForm.stuName" />
@@ -195,6 +219,12 @@
         </el-form-item>
         <el-form-item label="邮箱" prop="stuEmail">
           <el-input v-model="addForm.stuEmail" />
+        </el-form-item>
+        <el-form-item label="手机号" prop="stuPhone">
+          <el-input v-model="addForm.stuPhone" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="addForm.remark" />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -232,6 +262,12 @@
         <el-form-item label="邮箱" prop="stuEmail">
           <el-input v-model="editForm.stuEmail" />
         </el-form-item>
+        <el-form-item label="手机号" prop="stuPhone">
+          <el-input v-model="editForm.stuPhone" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="editForm.remark" placeholder="请输入备注"/>
+        </el-form-item>
       </el-form>
       <!--底部按钮区-->
       <span slot="footer" class="dialog-footer">
@@ -245,7 +281,14 @@
 </template>
 
 <script>
-import { sliceData, easyChangeGender, easyTimestamp, operateAge, timestampToTime } from '../../plugins/utils'
+import {
+  sliceData,
+  easyChangeGender,
+  easyTimestamp,
+  operateAge,
+  timestampToTime,
+  checkError
+} from '../../plugins/utils'
 export default {
   name: 'Student',
   data() {
@@ -265,6 +308,15 @@ export default {
         return callback()
       } else {
         callback(new Error('请输入合法的日期格式'))
+      }
+    }
+    // 验证手机号
+    var checkMobile = (rule, value, callback) => {
+      const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
+      if (regMobile.test(value)) {
+        return callback()
+      } else {
+        callback(new Error('请输入合法的手机号'))
       }
     }
     return {
@@ -292,7 +344,9 @@ export default {
         stuGender: '',
         stuBirthday: '',
         stuEmail: '',
-        stuAge: ''
+        stuPhone: '',
+        remark: '',
+        modifyBy: ''
       },
       // 修改学生的表单数据
       editForm: {
@@ -301,13 +355,14 @@ export default {
         stuGender: '',
         stuBirthday: '',
         stuEmail: '',
-        stuAge: ''
+        stuPhone: '',
+        remark: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
         stuId: [
-          { required: true, message: '请输入学生ID,1-2位:入学年份,3-4位:专业号,5-6:班级号,7-8:学号', trigger: 'blur' },
-          { min: 8, max: 8, message: '长度为8位阿拉伯数字', trigger: 'blur' }
+          { required: true, message: '请输入学号，系别+入学年份+专业号+班级号+学号', trigger: 'blur' },
+          { min: 8, max: 10, message: '长度为8到10个字符', trigger: 'blur' }
         ],
         stuName: [
           { required: true, message: '请输入学生姓名', trigger: 'blur' },
@@ -329,6 +384,13 @@ export default {
         stuEmail: [
           { required: true, message: '请输入学生邮箱', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
+        ],
+        stuPhone: [
+          { required: true, message: '请输入用户联系电话', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ],
+        remark: [
+          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       editFormRules: {
@@ -352,6 +414,13 @@ export default {
         stuEmail: [
           { required: true, message: '请输入学生邮箱', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
+        ],
+        stuPhone: [
+          { required: true, message: '请输入用户联系电话', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ],
+        remark: [
+          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       }
     }
@@ -362,9 +431,9 @@ export default {
   methods: {
     // 获取学生列表
     async getStudentList() {
-      const { data: res } = await this.$http.get('student/selectAdmin')
+      const { data: res } = await this.$http.get('student/selectAll')
       if (res.code !== 200) {
-        return this.$message.error('获取学生列表失败!')
+        return this.$message.error('获取学生列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
         res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
@@ -380,11 +449,11 @@ export default {
     },
     // 查找学生
     async selectStudent() {
-      const { data: res } = await this.$http.get('student/selectAdminById', {
+      const { data: res } = await this.$http.get('student/selectById', {
         params: this.queryInfo
       })
       if (res.code !== 200) {
-        return this.$message.error('获取学生列表失败!')
+        return this.$message.error('获取学生列表失败!' + checkError(res))
       }
       this.studentList = []
       this.studentList.push(res.data)
@@ -399,22 +468,22 @@ export default {
     },
     // 监听 switch 开关的改变
     async studentStateChange(studentInfo) {
-      if (studentInfo.isReal === false) {
+      if (studentInfo.valid === false) {
         const { data: res } = await this.$http.post(
-          `student/delete?stuId=${studentInfo.stuId}`
+          `student/disable?stuId=${studentInfo.stuId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('锁定学生失败')
+          return this.$message.error('锁定学生失败' + checkError(res))
         } else {
           this.getStudentList()
           return this.$message.success('锁定学生成功')
         }
       } else {
         const { data: res } = await this.$http.post(
-          `student/reDelete?stuId=${studentInfo.stuId}`
+          `student/recover?stuId=${studentInfo.stuId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启学生失败')
+          return this.$message.error('开启学生失败' + checkError(res))
         } else {
           this.getStudentList()
           return this.$message.success('开启学生成功')
@@ -432,10 +501,10 @@ export default {
     // 监听添加用户对话框的点击事件
     async showEditDialog(stuId) {
       const { data: res } = await this.$http.get(
-        `student/selectAdminById?stuId=${stuId}`
+        `student/selectById?stuId=${stuId}`
       )
       if (res.code !== 200) {
-        return this.$message.error('查询用户信息失败')
+        return this.$message.error('查询用户信息失败' + checkError(res))
       }
       this.editForm = res.data
       this.editForm.stuBirthday = easyTimestamp(this.editForm.stuBirthday.valueOf())
@@ -447,14 +516,13 @@ export default {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
         this.addForm.stuGender = easyChangeGender(this.addForm.stuGender)
-        this.addForm.stuAge = operateAge(this.addForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/insert',
           this.addForm
         )
         if (res.code !== 200) {
           this.addDialogVisible = false
-          return this.$message.error('添加学生失败')
+          return this.$message.error('添加学生失败' + checkError(res))
         } else {
           this.addDialogVisible = false
           this.$message.success('添加学生成功')
@@ -467,14 +535,13 @@ export default {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
         this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
-        this.editForm.stuAge = operateAge(this.editForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/update',
           this.editForm
         )
         if (res.code !== 200) {
           this.editDialogVisible = false
-          return this.$message.error('修改学生失败')
+          return this.$message.error('修改学生失败' + checkError(res))
         } else {
           this.editDialogVisible = false
           this.$message.success('修改学生成功')
@@ -499,9 +566,9 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('已撤回删除操作')
       }
-      const { data: res } = await this.$http.post(`student/save?stuId=${stuId}`)
+      const { data: res } = await this.$http.post(`student/delete?stuId=${stuId}`)
       if (res.code !== 200) {
-        return this.$message.error('删除学生失败')
+        return this.$message.error('删除学生失败' + checkError(res))
       }
       this.$message.success('删除学生成功')
       this.getStudentList()

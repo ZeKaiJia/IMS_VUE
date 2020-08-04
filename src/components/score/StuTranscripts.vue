@@ -10,7 +10,6 @@
     <el-row :gutter="20">
       <el-col :span="6">
         <el-input
-          oninput="value=value.replace(/[^\d.]/g,'')"
           v-model="queryInfo.stuId"
           placeholder="请输入学号"
           @clear="resetShow"
@@ -75,21 +74,21 @@
               <el-table-column label="性别" prop="stuGender" align="center"/>
             </el-table>
           </el-row>
-          <el-row style="margin-top: 28px">
-            <el-table :data="studentList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
-              <el-table-column label="邮箱" prop="stuEmail" align="center"/>
-            </el-table>
-          </el-row>
-        </el-col>
-        <el-col :span="6" style="align-items: center">
-          <el-row style="margin-top: -15px;">
+          <el-row style="margin-top: 28px;">
             <el-table :data="studentList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
               <el-table-column label="生日" prop="stuBirthday" align="center"/>
             </el-table>
           </el-row>
+        </el-col>
+        <el-col :span="6" style="align-items: center">
+          <el-row style="margin-top: -15px">
+            <el-table :data="studentList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+              <el-table-column label="邮箱" prop="stuEmail" align="center"/>
+            </el-table>
+          </el-row>
           <el-row style="margin-top: 28px">
             <el-table :data="studentList" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
-              <el-table-column label="年龄" prop="stuAge" align="center"/>
+              <el-table-column label="电话" prop="stuPhone" align="center"/>
             </el-table>
           </el-row>
         </el-col>
@@ -119,7 +118,7 @@
 </template>
 
 <script>
-import { easyChangeGender, easyTimestamp, operateAge, operateGPA } from '../../plugins/utils'
+import { checkError, easyChangeGender, easyTimestamp, operateGPA } from '../../plugins/utils'
 export default {
   name: 'StuTranscripts',
   data() {
@@ -164,32 +163,31 @@ export default {
     // 查找所有相关信息
     async getAllInfo() {
       // 查询学生信息
-      const { data: stuRes } = await this.$http.get('student/selectAdminById', {
+      const { data: stuRes } = await this.$http.get('student/selectById', {
         params: this.queryInfo
       })
       if (stuRes.code !== 200) {
-        return this.$message.error('获取学生列表失败!')
+        return this.$message.error('获取学生列表失败!' + checkError(stuRes))
       }
       this.loadPic(stuRes.data.stuGender)
       this.studentList = []
       this.studentList.push(stuRes.data)
       this.studentList[0].stuBirthday = easyTimestamp(this.studentList[0].stuBirthday.valueOf())
       this.studentList[0].stuGender = easyChangeGender(this.studentList[0].stuGender)
-      this.studentList[0].stuAge = operateAge(this.studentList[0].stuBirthday)
       // 查询成绩信息
-      const { data: ScoRes } = await this.$http.get(
-        'score/selectAdminByStuId', {
+      const { data: scoRes } = await this.$http.get(
+        'score/selectByStudentId', {
           params: this.queryInfo
         })
-      if (ScoRes.code !== 200) {
-        return this.$message.error('获取成绩列表失败!')
+      if (scoRes.code !== 200) {
+        return this.$message.error('获取成绩列表失败!' + checkError(scoRes))
       }
-      for (let i = 0; i < ScoRes.data.length; i++) {
-        ScoRes.data[i].subGPA = operateGPA(ScoRes.data[i].subScore)
-        ScoRes.data[i].subName = (await this.selectEachSubject(ScoRes.data[i].subId)).subName
-        ScoRes.data[i].subTeacherId = (await this.selectEachSubject(ScoRes.data[i].subId)).subTeacherId
+      for (let i = 0; i < scoRes.data.length; i++) {
+        scoRes.data[i].subGPA = operateGPA(scoRes.data[i].subScore)
+        scoRes.data[i].subName = (await this.selectEachSubject(scoRes.data[i].subId)).subName
+        scoRes.data[i].subTeacherId = (await this.selectEachSubject(scoRes.data[i].subId)).subTeacherId
       }
-      this.scoreList = ScoRes.data
+      this.scoreList = scoRes.data
       this.show = true
       setTimeout(() => {
         this.mainLoading = false
@@ -197,9 +195,9 @@ export default {
     },
     // 查询该学生每门课程的详细信息
     async selectEachSubject(subId) {
-      const { data: subRes } = await this.$http.get(`subject/selectAdminById?subId=${subId}`)
+      const { data: subRes } = await this.$http.get(`subject/selectById?subId=${subId}`)
       if (subRes.code !== 200) {
-        return this.$message.error('获取课程列表失败!')
+        return this.$message.error('获取课程列表失败!' + checkError(subRes))
       }
       return {
         subName: subRes.data.subName,

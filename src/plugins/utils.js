@@ -38,12 +38,12 @@ function easyTimestamp(timestamp) {
 function easyChangeGender (transData) {
   if (transData === 1) {
     return '男'
-  } else if (transData === 2) {
+  } else if (transData === 0) {
     return '女'
   } else if (transData === '男') {
     return 1
   } else {
-    return 2
+    return 0
   }
 }
 // 计算学生年龄
@@ -70,11 +70,21 @@ function operateGPA (subScore) {
 function sliceData (list, currentPage, pageSize) {
   return list.slice((currentPage - 1) * pageSize, pageSize + (currentPage - 1) * pageSize)
 }
+// 检查错误原因
+function checkError (res) {
+  if (res === '该账户不存在' || res === '该账户已锁定' || res === '密码错误请重试' ||
+    res === '没有相应权限' || res === '操作失败请重试') {
+    return res
+  } else {
+    return ''
+  }
+}
 export {
   timestampToTime,
   easyTimestamp,
   easyChangeGender,
   operateAge,
   operateGPA,
-  sliceData
+  sliceData,
+  checkError
 }

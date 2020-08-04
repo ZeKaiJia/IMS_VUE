@@ -14,12 +14,14 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 // 配置请求的根路径
-axios.defaults.baseURL = 'http://127.0.0.1:9988'
-// axios请求拦截
-axios.interceptors.request.use((config) => {
-  config.headers.Authorization = window.sessionStorage.getItem('token')
-  return config
-})
+// axios.defaults.baseURL = 'http://47.102.223.230:9988'
+axios.defaults.baseURL = 'http://localhost:9988'
+axios.defaults.withCredentials = true
+// // axios请求拦截
+// axios.interceptors.request.use((config) => {
+//   config.headers.Authorization = window.sessionStorage.getItem('token')
+//   return config
+// })
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
@@ -31,3 +33,32 @@ new Vue({
   router,
   render: (h) => h(App)
 }).$mount('#app')
+
+axios.interceptors.request.use(
+  function(config) {
+    const accessToken = localStorage.getItem('accessToken')
+    if (accessToken && accessToken !== '') {
+      config.headers.common.Authorization = accessToken
+    }
+    return config
+  },
+  function(error) {
+    // Do something with request error
+    return Promise.reject(error)
+  }
+)
+axios.interceptors.response.use(
+  function(response) {
+    // Do something with response data
+    const accessToken = response.headers.authorization
+    if (accessToken && accessToken !== '') {
+      localStorage.setItem('accessToken', accessToken)
+    }
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:9999'
+    return response
+  },
+  function(error) {
+    // Do something with response error
+    return Promise.reject(error)
+  }
+)

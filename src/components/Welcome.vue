@@ -62,7 +62,6 @@ export default {
   created() {
     window.sessionStorage.setItem('activePath', '/welcome')
     this.$parent.activePath = '/welcome'
-    console.log(this.$parent)
   },
   methods: {
     jump(activePath) {

@@ -88,6 +88,22 @@
                 {{scope.row.utcModify}}
               </el-tag>
             </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                修改人
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
+                备注
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.remark === '' ? '空' : scope.row.remark}}
+              </el-tag>
+            </el-row>
           </template>
         </el-table-column>
         <!--索引列-->
@@ -103,7 +119,7 @@
         <el-table-column label="状态" align="center" width="180px">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.isReal"
+              v-model="scope.row.valid"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="开启"
@@ -178,13 +194,16 @@
         label-width="80px"
       >
         <el-form-item label="学号" prop="stuId">
-          <el-input v-model="addForm.stuId" oninput="value=value.replace(/[^\d.]/g,'')"/>
+          <el-input v-model="addForm.stuId"/>
         </el-form-item>
         <el-form-item label="课程号" prop="subId">
           <el-input v-model="addForm.subId" oninput="value=value.replace(/[^\d.]/g,'')"/>
         </el-form-item>
         <el-form-item label="成绩" prop="subScore">
           <el-input v-model="addForm.subScore" oninput="value=value.replace(/[^\d.]/g,'')"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="addForm.remark" />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -216,6 +235,9 @@
         <el-form-item label="成绩" prop="subScore">
           <el-input v-model="editForm.subScore" oninput="value=value.replace(/[^\d.]/g,'')"/>
         </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="editForm.remark" placeholder="请输入备注"/>
+        </el-form-item>
       </el-form>
       <!--底部按钮区-->
       <span slot="footer" class="dialog-footer">
@@ -229,7 +251,7 @@
 </template>
 
 <script>
-import { operateGPA, sliceData, timestampToTime } from '../../plugins/utils'
+import { checkError, operateGPA, sliceData, timestampToTime } from '../../plugins/utils'
 export default {
   name: 'Scores',
   data() {
@@ -259,19 +281,22 @@ export default {
       addForm: {
         stuId: '',
         subId: '',
-        subScore: ''
+        subScore: '',
+        remark: '',
+        modifyBy: ''
       },
       // 修改课程的表单数据
       editForm: {
         stuId: '',
         subId: '',
-        subScore: ''
+        subScore: '',
+        remark: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
         stuId: [
-          { required: true, message: '请输入学生ID,1-2位:入学年份,3-4位:专业号,5-6:班级号,7-8:学号', trigger: 'blur' },
-          { min: 8, max: 8, message: '长度为8位阿拉伯数字', trigger: 'blur' }
+          { required: true, message: '请输入学号，系别+入学年份+专业号+班级号+学号', trigger: 'blur' },
+          { min: 8, max: 10, message: '长度为8到10个字符', trigger: 'blur' }
         ],
         subId: [
           { required: true, message: '请输入课程号', trigger: 'blur' },
@@ -280,12 +305,18 @@ export default {
         subScore: [
           { required: true, message: '请输入成绩', trigger: 'blur' },
           { validator: checkScore, trigger: 'blur' }
+        ],
+        remark: [
+          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       editFormRules: {
         subScore: [
           { required: true, message: '请输入成绩', trigger: 'blur' },
           { validator: checkScore, trigger: 'blur' }
+        ],
+        remark: [
+          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       total: 0,
@@ -301,9 +332,9 @@ export default {
   methods: {
     // 获取成绩列表
     async getScoreList () {
-      const { data: res } = await this.$http.get('score/selectAdmin')
+      const { data: res } = await this.$http.get('score/selectAll')
       if (res.code !== 200) {
-        return this.$message.error('获取成绩列表失败!')
+        return this.$message.error('获取成绩列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
         res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
@@ -318,11 +349,11 @@ export default {
     // 查找成绩
     async selectScore() {
       if (this.queryInfo.stuId !== '' && this.queryInfo.subId !== '') {
-        const { data: res } = await this.$http.get('score/selectAdminById', {
+        const { data: res } = await this.$http.get('score/selectByStudentAndSubjectId', {
           params: this.queryInfo
         })
         if (res.code !== 200) {
-          return this.$message.error('获取成绩列表失败!')
+          return this.$message.error('获取成绩列表失败!' + checkError(res))
         }
         this.scoreList = []
         this.scoreList.push(res.data)
@@ -334,10 +365,10 @@ export default {
         this.total = res.data.length
       } else if (this.queryInfo.stuId === '' && this.queryInfo.subId !== '') {
         const { data: res } = await this.$http.get(
-          `score/selectAdminBySubId?subId=${this.queryInfo.subId}`
+          `score/selectBySubjectId?subId=${this.queryInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('获取成绩列表失败!')
+          return this.$message.error('获取成绩列表失败!' + checkError(res))
         }
         for (let i = 0; i < res.data.length; i++) {
           res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
@@ -350,10 +381,10 @@ export default {
         this.total = res.data.length
       } else if (this.queryInfo.stuId !== '' && this.queryInfo.subId === '') {
         const { data: res } = await this.$http.get(
-          `score/selectAdminByStuId?stuId=${this.queryInfo.stuId}`
+          `score/selectByStudentId?stuId=${this.queryInfo.stuId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('获取成绩列表失败!')
+          return this.$message.error('获取成绩列表失败!' + checkError(res))
         }
         for (let i = 0; i < res.data.length; i++) {
           res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
@@ -371,22 +402,22 @@ export default {
     },
     // 监听 switch 开关的改变
     async scoreStateChange(scoreInfo) {
-      if (scoreInfo.isReal === false) {
+      if (scoreInfo.valid === false) {
         const { data: res } = await this.$http.post(
-          `score/delete?stuId=${scoreInfo.stuId}&subId=${scoreInfo.subId}`
+          `score/disable?stuId=${scoreInfo.stuId}&subId=${scoreInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('锁定成绩失败')
+          return this.$message.error('锁定成绩失败' + checkError(res))
         } else {
           this.getScoreList()
           return this.$message.success('锁定成绩成功')
         }
       } else {
         const { data: res } = await this.$http.post(
-          `score/reDelete?stuId=${scoreInfo.stuId}&subId=${scoreInfo.subId}`
+          `score/recover?stuId=${scoreInfo.stuId}&subId=${scoreInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启成绩失败')
+          return this.$message.error('开启成绩失败' + checkError(res))
         } else {
           this.getScoreList()
           return this.$message.success('开启成绩成功')
@@ -404,10 +435,10 @@ export default {
     // 监听修改成绩对话框的点击事件
     async showEditDialog(scope) {
       const { data: res } = await this.$http.get(
-        `score/selectAdminById?stuId=${scope.stuId}&subId=${scope.subId}`
+        `score/selectByStudentAndSubjectId?stuId=${scope.stuId}&subId=${scope.subId}`
       )
       if (res.code !== 200) {
-        return this.$message.error('查询成绩信息失败')
+        return this.$message.error('查询成绩信息失败' + checkError(res))
       }
       this.editForm = res.data
       this.editDialogVisible = true
@@ -422,7 +453,7 @@ export default {
         )
         if (res.code !== 200) {
           this.addDialogVisible = false
-          return this.$message.error('添加成绩失败')
+          return this.$message.error('添加成绩失败' + checkError(res))
         } else {
           this.addDialogVisible = false
           this.$message.success('添加成绩成功')
@@ -440,7 +471,7 @@ export default {
         )
         if (res.code !== 200) {
           this.editDialogVisible = false
-          return this.$message.error('修改成绩失败')
+          return this.$message.error('修改成绩失败' + checkError(res))
         } else {
           this.editDialogVisible = false
           this.$message.success('修改成绩成功')
@@ -465,9 +496,9 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('已撤回删除操作')
       }
-      const { data: res } = await this.$http.post(`score/save?stuId=${scope.stuId}&subId=${scope.subId}`)
+      const { data: res } = await this.$http.post(`score/delete?stuId=${scope.stuId}&subId=${scope.subId}`)
       if (res.code !== 200) {
-        return this.$message.error('删除成绩失败')
+        return this.$message.error('删除成绩失败' + checkError(res))
       }
       this.$message.success('删除成绩成功')
       this.getScoreList()

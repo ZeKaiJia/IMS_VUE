@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import { operateGPA } from '../../plugins/utils'
+import { checkError, operateGPA } from '../../plugins/utils'
 export default {
   name: 'subTranscripts',
   data() {
@@ -177,30 +177,30 @@ export default {
     // 查找所有相关信息
     async getAllInfo() {
       // 查询课程信息
-      const { data: subRes } = await this.$http.get('subject/selectAdminById', {
+      const { data: subRes } = await this.$http.get('subject/selectById', {
         params: this.queryInfo
       })
       if (subRes.code !== 200) {
-        return this.$message.error('获取课程列表失败!')
+        return this.$message.error('获取课程列表失败!' + checkError(subRes))
       }
       this.loadPic(subRes.data.subId)
       this.subjectList = []
       this.subjectList.push(subRes.data)
       // 查询成绩信息
-      const { data: ScoRes } = await this.$http.get(
-        'score/selectAdminBySubId', {
+      const { data: scoRes } = await this.$http.get(
+        'score/selectBySubjectId', {
           params: this.queryInfo
         })
-      if (ScoRes.code !== 200) {
+      if (scoRes.code !== 200) {
         this.scoreList = []
-        return this.$message.error('获取成绩列表失败!')
+        return this.$message.error('获取成绩列表失败!' + checkError(scoRes))
       }
-      for (let i = 0; i < ScoRes.data.length; i++) {
-        ScoRes.data[i].subGPA = operateGPA(ScoRes.data[i].subScore)
-        ScoRes.data[i].stuName = (await this.selectEachStudent(ScoRes.data[i].stuId)).stuName
-        ScoRes.data[i].stuEmail = (await this.selectEachStudent(ScoRes.data[i].stuId)).stuEmail
+      for (let i = 0; i < scoRes.data.length; i++) {
+        scoRes.data[i].subGPA = operateGPA(scoRes.data[i].subScore)
+        scoRes.data[i].stuName = (await this.selectEachStudent(scoRes.data[i].stuId)).stuName
+        scoRes.data[i].stuEmail = (await this.selectEachStudent(scoRes.data[i].stuId)).stuEmail
       }
-      this.scoreList = ScoRes.data
+      this.scoreList = scoRes.data
       this.show = true
       setTimeout(() => {
         this.mainLoading = false
@@ -208,9 +208,9 @@ export default {
     },
     // 查询该课程每位学生的详细信息
     async selectEachStudent(stuId) {
-      const { data: stuRes } = await this.$http.get(`student/selectAdminById?stuId=${stuId}`)
+      const { data: stuRes } = await this.$http.get(`student/selectById?stuId=${stuId}`)
       if (stuRes.code !== 200) {
-        return this.$message.error('获取课程列表失败!')
+        return this.$message.error('获取课程列表失败!' + checkError(stuRes))
       }
       return {
         stuName: stuRes.data.stuName,
