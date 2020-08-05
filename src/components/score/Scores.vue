@@ -409,7 +409,6 @@ export default {
         if (res.code !== 200) {
           return this.$message.error('锁定成绩失败' + checkError(res))
         } else {
-          this.getScoreList()
           return this.$message.success('锁定成绩成功')
         }
       } else {
@@ -419,7 +418,6 @@ export default {
         if (res.code !== 200) {
           return this.$message.error('开启成绩失败' + checkError(res))
         } else {
-          this.getScoreList()
           return this.$message.success('开启成绩成功')
         }
       }

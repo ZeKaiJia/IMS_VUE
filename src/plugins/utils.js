@@ -79,6 +79,22 @@ function checkError (res) {
     return ''
   }
 }
+// 转换角色中英文
+function easyChangeRoleName (usrType) {
+  if (usrType === '管理员') {
+    return 'admin'
+  } else if (usrType === '教师') {
+    return 'teacher'
+  } else if (usrType === '学生') {
+    return 'student'
+  } else if (usrType === 'admin') {
+    return '管理员'
+  } else if (usrType === 'teacher') {
+    return '教师'
+  } else if (usrType === 'student') {
+    return '学生'
+  }
+}
 export {
   timestampToTime,
   easyTimestamp,
@@ -86,5 +102,6 @@ export {
   operateAge,
   operateGPA,
   sliceData,
-  checkError
+  checkError,
+  easyChangeRoleName
 }

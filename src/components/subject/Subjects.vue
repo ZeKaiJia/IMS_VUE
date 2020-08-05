@@ -357,7 +357,6 @@ export default {
         if (res.code !== 200) {
           return this.$message.error('锁定课程失败' + checkError(res))
         } else {
-          this.getSubjectList()
           return this.$message.success('锁定课程成功')
         }
       } else {
@@ -367,7 +366,6 @@ export default {
         if (res.code !== 200) {
           return this.$message.error('开启课程失败' + checkError(res))
         } else {
-          this.getSubjectList()
           return this.$message.success('开启课程成功')
         }
       }

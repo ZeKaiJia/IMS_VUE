@@ -105,6 +105,7 @@
         </el-table-column>
         <el-table-column label="用户名" prop="usrName" align="center"/>
         <el-table-column label="密码" prop="usrPassword" align="center"/>
+        <el-table-column label="角色" prop="usrType" align="center"/>
         <el-table-column label="昵称" prop="usrNick" width="78px" align="center"/>
         <el-table-column label="最近登录时间" prop="lastLogin" align="center" min-width="190px"/>
         <el-table-column label="状态" align="center" width="180px">
@@ -193,6 +194,9 @@
         <el-form-item label="昵称" prop="usrNick">
           <el-input v-model="addForm.usrNick" />
         </el-form-item>
+        <el-form-item label="角色" prop="usrType">
+          <el-input v-model="addForm.usrType" />
+        </el-form-item>
         <el-form-item label="联系电话" prop="usrPhone">
           <el-input v-model="addForm.usrPhone" />
         </el-form-item>
@@ -232,6 +236,9 @@
         <el-form-item label="昵称" prop="usrNick">
           <el-input v-model="editForm.usrNick" />
         </el-form-item>
+        <el-form-item label="角色" prop="usrType">
+          <el-input v-model="editForm.usrType" />
+        </el-form-item>
         <el-form-item label="联系电话" prop="usrPhone">
           <el-input v-model="editForm.usrPhone" />
         </el-form-item>
@@ -254,7 +261,7 @@
 </template>
 
 <script>
-import { sliceData, timestampToTime, checkError } from '../../plugins/utils'
+import { sliceData, timestampToTime, checkError, easyChangeRoleName } from '../../plugins/utils'
 export default {
   name: 'Users',
   data() {
@@ -302,7 +309,8 @@ export default {
         usrPhone: '',
         usrEmail: '',
         remark: '',
-        modifyBy: ''
+        modifyBy: '',
+        usrType: ''
       },
       // 修改用户的表单数据
       editForm: {
@@ -311,7 +319,8 @@ export default {
         usrNick: '',
         usrPhone: '',
         usrEmail: '',
-        remark: ''
+        remark: '',
+        usrType: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
@@ -337,6 +346,15 @@ export default {
         ],
         remark: [
           { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
+        ],
+        usrType: [
+          { required: true, message: '请输入用户角色类型', trigger: 'blur' },
+          {
+            type: 'enum',
+            enum: ['管理员', '教师', '学生'],
+            message: '角色类型必须为管理员、教师或学生',
+            trigger: 'blur'
+          }
         ]
       },
       editFormRules: {
@@ -358,6 +376,15 @@ export default {
         ],
         remark: [
           { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
+        ],
+        usrType: [
+          { required: true, message: '请输入用户角色类型', trigger: 'blur' },
+          {
+            type: 'enum',
+            enum: ['管理员', '教师', '学生'],
+            message: '角色类型必须为管理员、教师或学生',
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -373,6 +400,7 @@ export default {
         return this.$message.error('获取用户列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
+        res.data[i].usrType = await this.selectEachRole(res.data[i].usrName)
         res.data[i].utcCreate = timestampToTime(res.data[i].utcCreate)
         res.data[i].utcModify = timestampToTime(res.data[i].utcModify)
         res.data[i].lastLogin =
@@ -385,6 +413,11 @@ export default {
       this.showUsrList = sliceData(this.userList, this.currentPage, this.pageSize)
       this.total = res.data.length
     },
+    // 获取用户角色
+    async selectEachRole (usrName) {
+      const { data: res } = await this.$http.get(`user/findRoleByUserName?usrName=${usrName}`)
+      return easyChangeRoleName(res.data)
+    },
     // 查找用户
     async selectUser() {
       const { data: res } = await this.$http.get('user/selectByName', {
@@ -393,6 +426,7 @@ export default {
       if (res.code !== 200) {
         return this.$message.error('获取用户列表失败!' + checkError(res))
       }
+      res.data.usrType = await this.selectEachRole(res.data.usrName)
       this.userList = []
       this.userList.push(res.data)
       this.userList[0].utcCreate = timestampToTime(this.userList[0].utcCreate)
@@ -424,7 +458,6 @@ export default {
         if (res.code !== 200) {
           return this.$message.error('锁定用户失败' + checkError(res))
         } else {
-          this.getUserList()
           return this.$message.success('锁定用户成功')
         }
       } else {
@@ -434,7 +467,6 @@ export default {
         if (res.code !== 200) {
           return this.$message.error('开启用户失败' + checkError(res))
         } else {
-          this.getUserList()
           return this.$message.success('开启用户成功')
         }
       }
@@ -451,7 +483,7 @@ export default {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
         const { data: res } = await this.$http.post(
-          'user/insert',
+          `user/insert?usrType=${easyChangeRoleName(this.addForm.usrType)}`,
           this.addForm
         )
         if (res.code !== 200) {
@@ -469,7 +501,7 @@ export default {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
         const { data: res } = await this.$http.post(
-          'user/update',
+          `user/update?usrType=${easyChangeRoleName(this.editForm.usrType)}`,
           this.editForm
         )
         if (res.code !== 200) {
@@ -525,6 +557,7 @@ export default {
       if (res.code !== 200) {
         return this.$message.error('查询用户信息失败' + checkError(res))
       }
+      res.data.usrType = await this.selectEachRole(usrName)
       this.editForm = res.data
       this.editDialogVisible = true
     },

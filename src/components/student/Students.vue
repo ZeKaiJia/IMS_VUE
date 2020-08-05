@@ -475,7 +475,6 @@ export default {
         if (res.code !== 200) {
           return this.$message.error('锁定学生失败' + checkError(res))
         } else {
-          this.getStudentList()
           return this.$message.success('锁定学生成功')
         }
       } else {
@@ -485,7 +484,6 @@ export default {
         if (res.code !== 200) {
           return this.$message.error('开启学生失败' + checkError(res))
         } else {
-          this.getStudentList()
           return this.$message.success('开启学生成功')
         }
       }
