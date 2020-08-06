@@ -27,6 +27,7 @@
 import echarts from 'echarts'
 // eslint-disable-next-line no-unused-vars
 import $ from 'jquery'
+import { checkError } from '../../plugins/utils'
 export default {
   name: 'Statuses',
   data() {
@@ -50,14 +51,14 @@ export default {
     hotChart.showLoading()
     // 获取用户数据
     const data = [0, 0, 0]
-    const { data: usrRes } = await this.$http.get('login/selectAll')
+    const { data: usrRes } = await this.$http.get('user/selectAllUserRole')
     if (usrRes.code !== 200) {
-      return this.$message.error('获取用户列表失败!')
+      return this.$message.error('获取用户列表失败！' + checkError(usrRes))
     }
     for (let i = 0; i < usrRes.data.length; i++) {
-      if (usrRes.data[i].usrType === '管理员') {
+      if (usrRes.data[i] === 'admin') {
         data[0]++
-      } else if (usrRes.data[i].usrType === '教师') {
+      } else if (usrRes.data[i] === 'teacher') {
         data[1]++
       } else {
         data[2]++
@@ -216,7 +217,6 @@ export default {
       const currentMonth = mon < 10 ? '0' + mon : '' + mon
       const da = now.getDate()
       const day = da < 10 ? '-0' + da : '-' + da
-      console.log(month + day)
       const end = +echarts.number.parseDate(year + month + day)
       const dayTime = 3600 * 24 * 1000
       const data = []

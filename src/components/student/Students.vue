@@ -185,7 +185,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-sizes="[1, 5, 10, 100]"
+        :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
@@ -203,7 +203,7 @@
         :model="addForm"
         :rules="addFormRules"
         ref="addFormRef"
-        label-width="70px"
+        label-width="100px"
       >
         <el-form-item label="学号" prop="stuId">
           <el-input v-model="addForm.stuId"/>
@@ -245,7 +245,7 @@
         :model="editForm"
         :rules="editFormRules"
         ref="editFormRef"
-        label-width="70px"
+        label-width="100px"
       >
         <el-form-item label="学号" prop="stuId">
           <el-input v-model="editForm.stuId" disabled />
@@ -321,7 +321,7 @@ export default {
     }
     return {
       // 页面数据显示条数
-      pageSize: 10,
+      pageSize: 7,
       // 当前页数
       currentPage: 1,
       // 搜索信息
@@ -356,7 +356,8 @@ export default {
         stuBirthday: '',
         stuEmail: '',
         stuPhone: '',
-        remark: ''
+        remark: '',
+        valid: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
@@ -473,18 +474,24 @@ export default {
           `student/disable?stuId=${studentInfo.stuId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('锁定学生失败' + checkError(res))
+          setTimeout(() => {
+            studentInfo.valid = true
+          }, 1000)
+          return this.$message.error('锁定学生失败！' + checkError(res))
         } else {
-          return this.$message.success('锁定学生成功')
+          return this.$message.success('锁定学生成功！')
         }
       } else {
         const { data: res } = await this.$http.post(
           `student/recover?stuId=${studentInfo.stuId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启学生失败' + checkError(res))
+          setTimeout(() => {
+            studentInfo.valid = false
+          }, 1000)
+          return this.$message.error('开启学生失败！' + checkError(res))
         } else {
-          return this.$message.success('开启学生成功')
+          return this.$message.success('开启学生成功！')
         }
       }
     },
@@ -532,6 +539,10 @@ export default {
     editStudent() {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
+        if (!this.editForm.valid) {
+          this.editDialogVisible = false
+          return this.$message.warning('数据被锁定无法进行操作')
+        }
         this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
         const { data: res } = await this.$http.post(
           'student/update',
@@ -563,6 +574,10 @@ export default {
       // 确认操作返回confirm字符串
       if (confirmResult !== 'confirm') {
         return this.$message.info('已撤回删除操作')
+      }
+      const { data: valid } = await this.$http.get(`student/selectById?stuId=${stuId}`)
+      if (!valid.data.valid) {
+        return this.$message.warning('数据被锁定无法进行操作')
       }
       const { data: res } = await this.$http.post(`student/delete?stuId=${stuId}`)
       if (res.code !== 200) {

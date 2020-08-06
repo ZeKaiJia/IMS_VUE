@@ -151,7 +151,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-sizes="[1, 5, 10, 100]"
+        :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
@@ -241,7 +241,7 @@ export default {
   data() {
     return {
       // 页面数据显示条数
-      pageSize: 10,
+      pageSize: 7,
       // 当前页数
       currentPage: 1,
       // 搜索信息
@@ -267,7 +267,8 @@ export default {
         subName: '',
         subTeacherId: '',
         subCredit: '',
-        remark: ''
+        remark: '',
+        valid: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
@@ -355,18 +356,24 @@ export default {
           `subject/disable?subId=${subjectInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('锁定课程失败' + checkError(res))
+          setTimeout(() => {
+            subjectInfo.valid = true
+          }, 1000)
+          return this.$message.error('锁定课程失败！' + checkError(res))
         } else {
-          return this.$message.success('锁定课程成功')
+          return this.$message.success('锁定课程成功！')
         }
       } else {
         const { data: res } = await this.$http.post(
           `subject/recover?subId=${subjectInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启课程失败' + checkError(res))
+          setTimeout(() => {
+            subjectInfo.valid = false
+          }, 1000)
+          return this.$message.error('开启课程失败！' + checkError(res))
         } else {
-          return this.$message.success('开启课程成功')
+          return this.$message.success('开启课程成功！')
         }
       }
     },
@@ -411,6 +418,10 @@ export default {
     editSubject() {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的课程信息后再提交')
+        if (!this.editForm.valid) {
+          this.editDialogVisible = false
+          return this.$message.warning('数据被锁定无法进行操作')
+        }
         const { data: res } = await this.$http.post(
           'subject/update',
           this.editForm
@@ -441,6 +452,10 @@ export default {
       // 确认操作返回confirm字符串
       if (confirmResult !== 'confirm') {
         return this.$message.info('已撤回删除操作')
+      }
+      const { data: valid } = await this.$http.get(`subject/selectById?subId=${subId}`)
+      if (!valid.data.valid) {
+        return this.$message.warning('数据被锁定无法进行操作')
       }
       const { data: res } = await this.$http.post(`subject/delete?subId=${subId}`)
       if (res.code !== 200) {

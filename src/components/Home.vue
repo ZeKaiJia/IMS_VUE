@@ -167,17 +167,19 @@ export default {
   },
   name: 'Home',
   methods: {
-    logout() {
+    async logout() {
+      await this.$http.get('user/logout')
       window.sessionStorage.clear()
-      this.$router.push('/login')
+      await this.$router.push('/login')
     },
     // 获取所有的菜单
     async getMenuList() {
-      // const { data: res } = await this.$http.get('login/menus')
-      // if (res.code !== 200) return this.$message.error(res.message)
-      // // const resData = JSON.parse(JSON.stringify(res))
-      // this.menuList = res.data
-      // console.log(res)
+      const type = window.sessionStorage.getItem('type')
+      if (type === 'teacher') {
+        this.menuList = this.menuList.slice(2, 6)
+      } else if (type === 'student') {
+        this.menuList = this.menuList.slice(3, 6)
+      }
     },
     toggleCollapse() {
       this.isCollapse = !this.isCollapse

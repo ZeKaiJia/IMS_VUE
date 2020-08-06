@@ -54,7 +54,8 @@
             <div slot="content">
               输入学号查询学生成绩表<br/>
               输入课程号查询课程成绩表<br/>
-              同时输入学号和课程号查找指定学生指定课程的一门成绩
+              同时输入来查找指定学生指定课程的成绩<br/>
+              通过锁定课程可以禁用该课程数据的修改和删除操作
             </div>
             <el-button style="padding: 0; border-color: white" circle>
               <i class="el-icon-info" style="font-size: 20px"/>
@@ -173,7 +174,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-sizes="[1, 5, 10, 100]"
+        :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
@@ -265,7 +266,7 @@ export default {
     }
     return {
       // 页面数据显示条数
-      pageSize: 10,
+      pageSize: 7,
       // 当前页数
       currentPage: 1,
       // 搜索信息
@@ -290,7 +291,8 @@ export default {
         stuId: '',
         subId: '',
         subScore: '',
-        remark: ''
+        remark: '',
+        valid: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
@@ -407,18 +409,24 @@ export default {
           `score/disable?stuId=${scoreInfo.stuId}&subId=${scoreInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('锁定成绩失败' + checkError(res))
+          setTimeout(() => {
+            scoreInfo.valid = true
+          }, 1000)
+          return this.$message.error('锁定成绩失败！' + checkError(res))
         } else {
-          return this.$message.success('锁定成绩成功')
+          return this.$message.success('锁定成绩成功！')
         }
       } else {
         const { data: res } = await this.$http.post(
           `score/recover?stuId=${scoreInfo.stuId}&subId=${scoreInfo.subId}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启成绩失败' + checkError(res))
+          setTimeout(() => {
+            scoreInfo.valid = false
+          }, 1000)
+          return this.$message.error('开启成绩失败！' + checkError(res))
         } else {
-          return this.$message.success('开启成绩成功')
+          return this.$message.success('开启成绩成功！')
         }
       }
     },
@@ -463,6 +471,10 @@ export default {
     editScore() {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的成绩信息后再提交')
+        if (!this.editForm.valid) {
+          this.editDialogVisible = false
+          return this.$message.warning('数据被锁定无法进行操作')
+        }
         const { data: res } = await this.$http.post(
           'score/update',
           this.editForm
@@ -493,6 +505,12 @@ export default {
       // 确认操作返回confirm字符串
       if (confirmResult !== 'confirm') {
         return this.$message.info('已撤回删除操作')
+      }
+      const { data: valid } = await this.$http.get(
+        `score/selectByStudentAndSubjectId?stuId=${scope.stuId}&subId=${scope.subId}`
+      )
+      if (!valid.data.valid) {
+        return this.$message.warning('数据被锁定无法进行操作')
       }
       const { data: res } = await this.$http.post(`score/delete?stuId=${scope.stuId}&subId=${scope.subId}`)
       if (res.code !== 200) {

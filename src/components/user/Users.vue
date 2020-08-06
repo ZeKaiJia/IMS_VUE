@@ -29,10 +29,23 @@
             >添加用户</el-button
           >
         </el-col>
-        <el-col :span="11">
+        <el-col :span="1.5">
+          <el-tooltip
+            class="item"
+            effect="light"
+            placement="right"
+            style="margin-top: 10px"
+            content="通过锁定用户可以禁用该用户数据的修改和删除操作"
+          >
+            <el-button style="padding: 0; border-color: white" circle>
+              <i class="el-icon-info" style="font-size: 20px"/>
+            </el-button>
+          </el-tooltip>
+        </el-col>
+        <el-col :span="8">
           <el-alert
-            title="请勿将所有用户的状态关闭，这将导致用户无法登录系统"
-            style="min-width: 500px; max-width: 500px"
+            title="测试时请不要删除所有管理员账户"
+            style="min-width: 320px; max-width: 340px"
             type="warning"
             show-icon>
           </el-alert>
@@ -165,7 +178,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-sizes="[1, 5, 10, 100]"
+        :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
@@ -285,7 +298,7 @@ export default {
     }
     return {
       // 页面数据显示条数
-      pageSize: 10,
+      pageSize: 7,
       // 当前页数
       currentPage: 1,
       // 获取用户列表的参数对象
@@ -320,7 +333,8 @@ export default {
         usrPhone: '',
         usrEmail: '',
         remark: '',
-        usrType: ''
+        usrType: '',
+        valid: ''
       },
       // 添加表单的验证规则对象
       addFormRules: {
@@ -456,18 +470,24 @@ export default {
           `user/disable?usrName=${userInfo.usrName}`
         )
         if (res.code !== 200) {
-          return this.$message.error('锁定用户失败' + checkError(res))
+          setTimeout(() => {
+            userInfo.valid = true
+          }, 1000)
+          return this.$message.error('锁定用户失败！' + checkError(res))
         } else {
-          return this.$message.success('锁定用户成功')
+          return this.$message.success('锁定用户成功！')
         }
       } else {
         const { data: res } = await this.$http.post(
           `user/recover?usrName=${userInfo.usrName}`
         )
         if (res.code !== 200) {
-          return this.$message.error('开启用户失败' + checkError(res))
+          setTimeout(() => {
+            userInfo.valid = false
+          }, 1000)
+          return this.$message.error('开启用户失败！' + checkError(res))
         } else {
-          return this.$message.success('开启用户成功')
+          return this.$message.success('开启用户成功！')
         }
       }
     },
@@ -500,6 +520,10 @@ export default {
     editUser() {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
+        if (!this.editForm.valid) {
+          this.editDialogVisible = false
+          return this.$message.warning('数据被锁定无法进行操作')
+        }
         const { data: res } = await this.$http.post(
           `user/update?usrType=${easyChangeRoleName(this.editForm.usrType)}`,
           this.editForm
@@ -530,6 +554,10 @@ export default {
       // 确认操作返回confirm字符串
       if (confirmResult !== 'confirm') {
         return this.$message.info('已撤回删除操作')
+      }
+      const { data: valid } = await this.$http.get(`user/selectByName?usrName=${usrName}`)
+      if (!valid.data.valid) {
+        return this.$message.warning('数据被锁定无法进行操作')
       }
       const { data: res } = await this.$http.post(`user/delete?usrName=${usrName}`)
       if (res.code !== 200) {
