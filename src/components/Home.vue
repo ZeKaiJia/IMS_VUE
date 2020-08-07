@@ -163,7 +163,7 @@ export default {
   created() {
     this.getMenuList()
     this.activePath = window.sessionStorage.getItem('activePath')
-    this.showUser = window.sessionStorage.getItem('user')
+    this.showUser = window.sessionStorage.getItem('nick')
   },
   name: 'Home',
   methods: {

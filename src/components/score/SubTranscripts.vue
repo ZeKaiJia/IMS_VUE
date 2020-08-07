@@ -10,16 +10,22 @@
     <el-row :gutter="20">
       <el-col :span="6">
         <el-input
-          oninput="value=value.replace(/[^\d.]/g,'')"
-          v-model="queryInfo.subId"
+          v-model.number="queryInfo.subId"
+          type="number"
           placeholder="请输入课程号"
           @clear="resetShow"
           clearable/>
       </el-col>
-      <el-col :span="4">
+      <el-col :span="3">
         <el-button size="medium" type="primary" @click="getAllInfo">
           查询成绩单
         </el-button>
+      </el-col>
+      <el-col :span="5">
+        <el-alert
+          title="输入信息查询成绩"
+          type="info">
+        </el-alert>
       </el-col>
     </el-row>
     <!--初始空卡片区-->

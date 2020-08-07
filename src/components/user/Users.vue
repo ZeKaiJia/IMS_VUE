@@ -78,6 +78,14 @@
             </el-row>
             <el-row>
               <el-tag type="info" effect="plain">
+                最近登录
+              </el-tag>
+              <el-tag type="info" effect="plain">
+                {{scope.row.lastLogin}}
+              </el-tag>
+            </el-row>
+            <el-row>
+              <el-tag type="info" effect="plain">
                 创建时间
               </el-tag>
               <el-tag type="info" effect="plain">
@@ -117,10 +125,20 @@
           </template>
         </el-table-column>
         <el-table-column label="用户名" prop="usrName" align="center"/>
-        <el-table-column label="密码" prop="usrPassword" align="center"/>
+        <el-table-column label="密码" align="center">
+          <template slot-scope="scope">
+            <span>{{showPassword ?
+              (scope.row.usrName === checkPassUser ? scope.row.usrPassword + ' '  : '******** ')
+              : '******** '}}</span>
+            <el-button
+              icon="el-icon-view"
+              type="text"
+              @click="checkPassword(scope.row)"
+            />
+          </template>
+        </el-table-column>
         <el-table-column label="角色" prop="usrType" align="center"/>
-        <el-table-column label="昵称" prop="usrNick" width="78px" align="center"/>
-        <el-table-column label="最近登录时间" prop="lastLogin" align="center" min-width="190px"/>
+        <el-table-column label="昵称" prop="usrNick" align="center"/>
         <el-table-column label="状态" align="center" width="180px">
           <template slot-scope="scope">
             <el-switch
@@ -297,6 +315,12 @@ export default {
       }
     }
     return {
+      // 当前用户
+      currentUserName: '',
+      // 获取密码用户
+      checkPassUser: '',
+      // 显示密码
+      showPassword: false,
       // 页面数据显示条数
       pageSize: 7,
       // 当前页数
@@ -405,6 +429,7 @@ export default {
   },
   created() {
     this.getUserList()
+    this.currentUserName = window.sessionStorage.getItem('name')
   },
   methods: {
     // 获取用户列表
@@ -452,6 +477,16 @@ export default {
       // 定向搜索只可能查询到一条记录
       this.showUsrList = this.userList
       this.total = res.data.length
+    },
+    // 查看用户密码
+    checkPassword(data) {
+      if (this.checkPassUser === data.usrName || this.checkPassUser === '') {
+        this.showPassword = !this.showPassword
+      }
+      if (!this.showPassword && this.checkPassUser !== data.usrName) {
+        this.showPassword = true
+      }
+      this.checkPassUser = data.usrName
     },
     // 监听 pagesize 改变的事件
     handleSizeChange(newSize) {
@@ -577,7 +612,7 @@ export default {
     //   }
     //   return ''
     // },
-    // 监听添加用户对话框的点击事件
+    // 监听修改用户对话框的点击事件
     async showEditDialog(usrName) {
       const { data: res } = await this.$http.get(
         `user/selectByName?usrName=${usrName}`

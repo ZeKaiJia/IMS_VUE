@@ -45,9 +45,21 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="240px" align="center">
-          <template slot-scope="">
-            <el-button type="primary" icon="el-icon-edit" size="mini" disabled>编辑</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" disabled>删除</el-button>
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="showEditDialog(scope.row.id)"
+            >编辑
+            </el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              disabled
+            >删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -62,6 +74,36 @@
         :total="total">
       </el-pagination>
     </el-card>
+    <!--修改用户的对话框-->
+    <el-dialog
+      title="修改用户"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="editDialogClosed"
+    >
+      <!--内容主题区域-->
+      <el-form
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="100px"
+      >
+        <el-form-item label="权限名" prop="name">
+          <el-input v-model="editForm.name"/>
+        </el-form-item>
+        <el-form-item label="权限代码" prop="permission">
+          <el-input v-model="editForm.permission" disabled/>
+        </el-form-item>
+        <el-form-item label="权限url" prop="url">
+          <el-input v-model="editForm.url" disabled/>
+        </el-form-item>
+      </el-form>
+      <!--底部按钮区-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editPermission">修 改</el-button>
+      </span>
+    </el-dialog>
     <!--回到顶部-->
     <el-backtop target=".el-main" :bottom="50">△</el-backtop>
   </div>
@@ -74,6 +116,8 @@ export default {
   name: 'Rights',
   data() {
     return {
+      // 控制修改用户对话框的显示
+      editDialogVisible: false,
       // 页面数据显示条数
       pageSize: 7,
       // 当前页数
@@ -82,7 +126,19 @@ export default {
       rightsList: [],
       // 分页显示的权限数据
       showRightsList: [],
-      total: 0
+      total: 0,
+      // 修改权限的表单数据
+      editForm: {
+        name: '',
+        permission: '',
+        url: ''
+      },
+      // 添加表单的验证规则对象
+      editFormRules: {
+        name: [
+          { required: true, message: '请输入权限名' }
+        ]
+      }
     }
   },
   created() {
@@ -92,13 +148,41 @@ export default {
     // 获取权限列表
     async getRightList () {
       this.$message.warning('权限暂不支持自定义')
-      const { data: res } = await this.$http.get('user/selectAllPermission')
+      const { data: res } = await this.$http.get('permission/selectAllPermission')
       if (res.code !== 200) {
         return this.$message.error('获取权限列表失败!' + checkError(res))
       }
       this.rightsList = res.data
       this.showRightsList = sliceData(this.rightsList, this.currentPage, this.pageSize)
       this.total = res.data.length
+    },
+    // 监听修改权限对话框的点击事件
+    async showEditDialog(id) {
+      const { data: res } = await this.$http.get(
+        `permission/selectById?id=${id}`
+      )
+      if (res.code !== 200) {
+        return this.$message.error('查询权限信息失败' + checkError(res))
+      }
+      this.editForm = res.data
+      this.editDialogVisible = true
+    },
+    editPermission() {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) return this.$message.error('请填写正确的权限信息后再提交')
+        const { data: res } = await this.$http.post(
+          'permission/update',
+          this.editForm
+        )
+        if (res.code !== 200) {
+          this.editDialogVisible = false
+          return this.$message.error('修改权限失败' + checkError(res))
+        } else {
+          this.editDialogVisible = false
+          this.$message.success('修改权限成功')
+        }
+        this.getRightList()
+      })
     },
     // 当前页面显示数据条数改变事件
     // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
@@ -113,6 +197,10 @@ export default {
       this.currentPage = val
       // 根据当前页数和每页显示数控大小截取数据
       this.showRightsList = sliceData(this.rightsList, this.currentPage, this.pageSize)
+    },
+    // 监听添加用户对话框的关闭事件
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
     }
   }
 }

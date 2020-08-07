@@ -30,16 +30,32 @@
     <el-card class="card">
       <el-row :gutter="20">
           <el-col :span="6">
-            <div class="foot" style="cursor: default">快速入口:</div>
+            <div class="foot">快速入口:</div>
           </el-col>
           <el-col :span="6">
-            <div class="foot" @click="jump('/404')">最新校务通知</div>
+            <el-link
+              href="http://www.ky.zstu.edu.cn/index/xyxw.htm"
+              target="_blank"
+              class="link"
+              :underline="false"
+              icon="el-icon-s-claim"
+            >最新校务通知</el-link>
           </el-col>
           <el-col :span="6">
-            <div class="foot" @click="jump('/students')">学生成绩查询</div>
+            <el-link
+              @click="jump('/students')"
+              class="link"
+              :underline="false"
+              icon="el-icon-s-custom"
+            >学生成绩查询</el-link>
           </el-col>
           <el-col :span="6">
-            <div class="foot" @click="jump('/subjects')">教师课程查询</div>
+            <el-link
+              @click="jump('/subjects')"
+              class="link"
+              :underline="false"
+              icon="el-icon-s-order"
+            >教师课程查询</el-link>
           </el-col>
       </el-row>
     </el-card>
@@ -93,7 +109,11 @@ export default {
     font-weight: bold;
     margin-top: -4px;
     text-align: center;
-    cursor: pointer;
+    cursor: default;
+  }
+  .link {
+    margin-top: -14px;
+    margin-left: 40px;
   }
   .card {
     margin-left: 34px;

@@ -28,6 +28,7 @@
         <!--密码-->
         <el-form-item class="form-item" prop="usrPassword">
           <el-input
+            show-password
             class="form-input"
             placeholder="密码"
             v-model="loginForm.usrPassword"
@@ -82,7 +83,8 @@ export default {
           return this.$message.error('用户名或密码错误，请重试')
         } else {
           const { data: type } = await this.$http.get(`user/findRoleByUserName?usrName=${result.data.usrName}`)
-          window.sessionStorage.setItem('user', result.data.usrNick)
+          window.sessionStorage.setItem('name', result.data.usrName)
+          window.sessionStorage.setItem('nick', result.data.usrNick)
           window.sessionStorage.setItem('type', type.data)
           window.sessionStorage.setItem('token', result.data.utcCreate)
           this.$message.success('欢迎您，' + result.data.usrName)

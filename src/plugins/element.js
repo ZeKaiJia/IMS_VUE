@@ -35,7 +35,8 @@ import {
   Popover,
   Carousel,
   CarouselItem,
-  Divider
+  Divider,
+  Link
 } from 'element-ui'
 import VueLazyload from 'vue-lazyload'
 
@@ -73,6 +74,7 @@ Vue.use(Popover)
 Vue.use(Carousel)
 Vue.use(CarouselItem)
 Vue.use(Divider)
+Vue.use(Link)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

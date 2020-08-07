@@ -15,10 +15,16 @@
           @clear="resetShow"
           clearable/>
       </el-col>
-      <el-col :span="4">
+      <el-col :span="3">
         <el-button size="medium" type="primary" @click="getAllInfo">
           查询成绩单
         </el-button>
+      </el-col>
+      <el-col :span="5">
+        <el-alert
+          title="输入信息查询成绩"
+          type="info">
+        </el-alert>
       </el-col>
     </el-row>
     <!--初始空卡片区-->
