@@ -10,7 +10,7 @@
     <el-card>
       <!--添加角色按钮区-->
       <el-row :gutter="10">
-        <el-col :span="2.5">
+        <el-col :span="3">
           <el-button type="primary" disabled>添加权限</el-button>
         </el-col>
         <el-col :span="2">
@@ -35,6 +35,7 @@
       >
         <el-table-column type="index" label="#" width="48px" align="center"/>
         <el-table-column label="权限名称" prop="name" align="center"/>
+        <el-table-column label="权限代码" prop="permission" align="center"/>
         <el-table-column label="路径名称" prop="url" align="center"/>
         <el-table-column label="权限等级" prop="remark" align="center">
           <template slot-scope="scope">
@@ -74,9 +75,9 @@
         :total="total">
       </el-pagination>
     </el-card>
-    <!--修改用户的对话框-->
+    <!--修改权限的对话框-->
     <el-dialog
-      title="修改用户"
+      title="修改权限"
       :visible.sync="editDialogVisible"
       width="50%"
       @close="editDialogClosed"
@@ -96,6 +97,9 @@
         </el-form-item>
         <el-form-item label="权限url" prop="url">
           <el-input v-model="editForm.url" disabled/>
+        </el-form-item>
+        <el-form-item label="权限等级" prop="url">
+          <el-input v-model="editForm.remark"/>
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -131,23 +135,33 @@ export default {
       editForm: {
         name: '',
         permission: '',
-        url: ''
+        url: '',
+        remark: ''
       },
       // 添加表单的验证规则对象
       editFormRules: {
         name: [
           { required: true, message: '请输入权限名' }
+        ],
+        remark: [
+          { required: true, message: '请输入权限等级' },
+          {
+            type: 'enum',
+            enum: ['0', '1', '2', '3'],
+            message: '权限等级必须为0-3的整数',
+            trigger: 'blur'
+          }
         ]
       }
     }
   },
   created() {
+    this.$message.warning('权限暂不支持自定义')
     this.getRightList()
   },
   methods: {
     // 获取权限列表
     async getRightList () {
-      this.$message.warning('权限暂不支持自定义')
       const { data: res } = await this.$http.get('permission/selectAllPermission')
       if (res.code !== 200) {
         return this.$message.error('获取权限列表失败!' + checkError(res))

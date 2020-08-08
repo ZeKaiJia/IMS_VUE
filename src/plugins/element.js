@@ -36,7 +36,8 @@ import {
   Carousel,
   CarouselItem,
   Divider,
-  Link
+  Link,
+  Transfer
 } from 'element-ui'
 import VueLazyload from 'vue-lazyload'
 
@@ -75,6 +76,7 @@ Vue.use(Carousel)
 Vue.use(CarouselItem)
 Vue.use(Divider)
 Vue.use(Link)
+Vue.use(Transfer)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

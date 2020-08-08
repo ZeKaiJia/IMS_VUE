@@ -51,7 +51,7 @@ export default {
     hotChart.showLoading()
     // 获取用户数据
     const data = [0, 0, 0]
-    const { data: usrRes } = await this.$http.get('user/selectAllUserRole')
+    const { data: usrRes } = await this.$http.get('role/selectAllUserRole')
     if (usrRes.code !== 200) {
       return this.$message.error('获取用户列表失败！' + checkError(usrRes))
     }
