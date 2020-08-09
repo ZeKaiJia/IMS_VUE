@@ -74,36 +74,52 @@
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
             <el-row>
-              <el-tag type="info" effect="plain">
-                创建时间
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.utcCreate}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  创建时间
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.utcCreate}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                修改时间
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.utcModify}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  修改时间
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.utcModify}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                修改人
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  修改人
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                备注
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.remark === '' ? '空' : scope.row.remark}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  备注
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.remark === '' ? '空' : scope.row.remark}}
+                </el-tag>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
@@ -198,13 +214,18 @@
           <el-input v-model="addForm.stuId"/>
         </el-form-item>
         <el-form-item label="课程号" prop="subId">
-          <el-input v-model="addForm.subId" oninput="value=value.replace(/[^\d.]/g,'')"/>
+          <el-input v-model.number="addForm.subId" type="number"/>
         </el-form-item>
         <el-form-item label="成绩" prop="subScore">
-          <el-input v-model="addForm.subScore" oninput="value=value.replace(/[^\d.]/g,'')"/>
+          <el-input v-model.number="addForm.subScore" type="number"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="addForm.remark" />
+          <el-input
+            v-model="addForm.remark"
+            placeholder="请输入备注"
+            maxlength="20"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -234,10 +255,15 @@
           <el-input v-model="editForm.subId" disabled/>
         </el-form-item>
         <el-form-item label="成绩" prop="subScore">
-          <el-input v-model="editForm.subScore" oninput="value=value.replace(/[^\d.]/g,'')"/>
+          <el-input v-model.number="editForm.subScore" type="number"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="editForm.remark" placeholder="请输入备注"/>
+          <el-input
+            v-model="editForm.remark"
+            placeholder="请输入备注"
+            maxlength="20"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -307,18 +333,12 @@ export default {
         subScore: [
           { required: true, message: '请输入成绩', trigger: 'blur' },
           { validator: checkScore, trigger: 'blur' }
-        ],
-        remark: [
-          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       editFormRules: {
         subScore: [
           { required: true, message: '请输入成绩', trigger: 'blur' },
           { validator: checkScore, trigger: 'blur' }
-        ],
-        remark: [
-          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       total: 0,

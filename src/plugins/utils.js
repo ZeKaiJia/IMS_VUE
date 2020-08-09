@@ -95,6 +95,11 @@ function easyChangeRoleName (usrType) {
     return '学生'
   }
 }
+// 获得UTC的标准时间（+8）
+function easyChangeTimeStamp (date) {
+  date = date.setHours(date.getHours() + 8)
+  return date
+}
 export {
   timestampToTime,
   easyTimestamp,
@@ -103,5 +108,6 @@ export {
   operateGPA,
   sliceData,
   checkError,
-  easyChangeRoleName
+  easyChangeRoleName,
+  easyChangeTimeStamp
 }

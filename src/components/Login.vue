@@ -1,5 +1,6 @@
 <template>
   <div class="login-container">
+    <div class="back"></div>
     <div class="login-box">
       <!--头像区域-->
       <div class="avater-box">
@@ -22,7 +23,7 @@
             class="form-input"
             placeholder="账号"
             v-model="loginForm.usrName"
-            prefix-icon="iconfont icon-icon-test35"
+            prefix-icon="el-icon-user"
           />
         </el-form-item>
         <!--密码-->
@@ -32,13 +33,29 @@
             class="form-input"
             placeholder="密码"
             v-model="loginForm.usrPassword"
-            prefix-icon="iconfont icon-icon-test26"
+            prefix-icon="el-icon-lock"
             type="password"
           />
         </el-form-item>
+        <el-form-item class="form-item" prop="verifycode">
+          <el-input
+            v-model="loginForm.verifycode"
+            placeholder="验证码"
+            class="identifyinput form-input"
+            prefix-icon="el-icon-key"
+          />
+        </el-form-item>
+        <el-form-item>
+          <div class="identifybox" style="display: flex; justify-content: center">
+            <div @click="refreshCode">
+              <s-identify :identifyCode="identifyCode"/>
+            </div>
+            <el-button @click="refreshCode" type='text' class="textbtn">看不清，换一张</el-button>
+          </div>
+        </el-form-item>
         <el-form-item class="form-button">
-          <el-button type="primary" @click="submitLoginForm">登录</el-button>
-          <el-button type="info" @click="resetLoginForm">重置</el-button>
+          <el-button type="primary" @click="submitLoginForm" style="margin-right: 18px">登录</el-button>
+          <el-button type="info" @click="resetLoginForm" style="margin-left: 18px">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -46,14 +63,28 @@
 </template>
 
 <script>
+import SIdentify from './util/Identify'
 export default {
   name: 'login',
   data() {
+    // 验证码自定义验证规则
+    const validateVerifycode = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入验证码'))
+      } else if (value !== this.identifyCode) {
+        callback(new Error('验证码不正确!'))
+      } else {
+        callback()
+      }
+    }
     return {
       loginForm: {
         usrName: '',
-        usrPassword: ''
+        usrPassword: '',
+        verifycode: ''
       },
+      identifyCodes: '1234567890',
+      identifyCode: '',
       loginFormRules: {
         usrName: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -62,9 +93,20 @@ export default {
         usrPassword: [
           { required: true, message: '请输入用户密码', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+        ],
+        verifycode: [
+          { required: true, trigger: 'blur', validator: validateVerifycode }
         ]
       }
     }
+  },
+  components: {
+    SIdentify
+  },
+  mounted() {
+    // 验证码初始化
+    this.identifyCode = ''
+    this.makeCode(this.identifyCodes, 4)
   },
   methods: {
     resetLoginForm() {
@@ -91,6 +133,23 @@ export default {
           await this.$router.push({ path: '/home' }, () => {}, () => {})
         }
       })
+    },
+    // 生成随机数
+    randomNum(min, max) {
+      return Math.floor(Math.random() * (max - min) + min)
+    },
+    // 切换验证码
+    refreshCode() {
+      this.identifyCode = ''
+      this.makeCode(this.identifyCodes, 4)
+    },
+    // 生成四位随机验证码
+    makeCode(o, l) {
+      for (let i = 0; i < l; i++) {
+        this.identifyCode += this.identifyCodes[
+          this.randomNum(0, this.identifyCodes.length)
+        ]
+      }
     }
   }
 }
@@ -98,13 +157,27 @@ export default {
 
 <style lang="less" scoped>
   .login-container {
-    background-color: #2b4b6b;
     height: 100%;
+    width: 100%;
+    position: relative;
   }
-
+  .back {
+    background-image: url("http://s1.wailian.download/2020/07/27/school1.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    filter: blur(4px);
+    transition: filter 2s;
+  }
+  .back:hover {
+    filter: blur(0px);
+  }
   .login-box {
     width: 600px;
-    height: 360px;
+    height: 440px;
     background-color: rgb(191, 212, 243);
     border-radius: 15px;
     position: absolute;
@@ -144,7 +217,7 @@ export default {
     }
 
     .form-item {
-      margin-top: 40px;
+      margin-top: 24px;
       text-align: center;
       .form-input {
         border: 0;
@@ -154,9 +227,8 @@ export default {
         width: 320px;
       }
     }
-
     .form-button {
-      margin-top: 30px;
+      margin-top: -12px;
       text-align: center;
     }
   }
@@ -169,4 +241,13 @@ export default {
       top: 110%;
       left: 140px !important;
     }
+  .identifybox {
+    display: flex;
+    justify-content: space-between;
+    margin-top:7px;
+  }
+  .textbtn {
+    margin-left: 24px;
+    margin-top: -12px;
+  }
 </style>

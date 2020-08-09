@@ -61,60 +61,88 @@
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
             <el-row>
-              <el-tag type="info" effect="plain">
-                联系电话
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.usrPhone}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  联系电话
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.usrPhone}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                电子邮箱
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.usrEmail}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  电子邮箱
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.usrEmail}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                最近登录
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.lastLogin}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  最近登录
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.lastLogin}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                创建时间
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.utcCreate}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  创建时间
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.utcCreate}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                修改时间
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.utcModify}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  修改时间
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.utcModify}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                修改人
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  修改人
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                备注
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.remark === '' ? '空' : scope.row.remark}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  备注
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.remark === '' ? '空' : scope.row.remark}}
+                </el-tag>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
@@ -226,16 +254,32 @@
           <el-input v-model="addForm.usrNick" />
         </el-form-item>
         <el-form-item label="角色" prop="usrType">
-          <el-input v-model="addForm.usrType" />
+          <template>
+            <el-select v-model="addForm.usrType" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                <span style="float: left">{{ item.label }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </template>
         </el-form-item>
         <el-form-item label="联系电话" prop="usrPhone">
-          <el-input v-model="addForm.usrPhone" />
+          <el-input v-model.number="addForm.usrPhone" type="number"/>
         </el-form-item>
         <el-form-item label="电子邮箱" prop="usrEmail">
           <el-input v-model="addForm.usrEmail" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="addForm.remark" />
+          <el-input
+            v-model="addForm.remark"
+            placeholder="请输入备注"
+            maxlength="20"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -268,16 +312,32 @@
           <el-input v-model="editForm.usrNick" />
         </el-form-item>
         <el-form-item label="角色" prop="usrType">
-          <el-input v-model="editForm.usrType" />
+          <template>
+            <el-select v-model="editForm.usrType" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                <span style="float: left">{{ item.label }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+              </el-option>
+            </el-select>
+          </template>
         </el-form-item>
         <el-form-item label="联系电话" prop="usrPhone">
-          <el-input v-model="editForm.usrPhone" />
+          <el-input v-model.number="editForm.usrPhone" type="number"/>
         </el-form-item>
         <el-form-item label="电子邮箱" prop="usrEmail">
           <el-input v-model="editForm.usrEmail" />
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="editForm.remark" placeholder="请输入备注"/>
+          <el-input
+            v-model="editForm.remark"
+            placeholder="请输入备注"
+            maxlength="20"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -315,6 +375,17 @@ export default {
       }
     }
     return {
+      // 角色类型选择
+      options: [{
+        value: 'admin',
+        label: '管理员'
+      }, {
+        value: 'teacher',
+        label: '教师'
+      }, {
+        value: 'student',
+        label: '学生'
+      }],
       // 当前用户
       currentUserName: '',
       // 获取密码用户
@@ -382,17 +453,8 @@ export default {
           { required: true, message: '请输入用户电子邮箱', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
         ],
-        remark: [
-          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
-        ],
         usrType: [
-          { required: true, message: '请输入用户角色类型', trigger: 'blur' },
-          {
-            type: 'enum',
-            enum: ['管理员', '教师', '学生'],
-            message: '角色类型必须为管理员、教师或学生',
-            trigger: 'blur'
-          }
+          { required: true, message: '请选择用户角色类型', trigger: 'blur' }
         ]
       },
       editFormRules: {
@@ -412,17 +474,8 @@ export default {
           { required: true, message: '请输入用户电子邮箱', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
         ],
-        remark: [
-          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
-        ],
         usrType: [
-          { required: true, message: '请输入用户角色类型', trigger: 'blur' },
-          {
-            type: 'enum',
-            enum: ['管理员', '教师', '学生'],
-            message: '角色类型必须为管理员、教师或学生',
-            trigger: 'blur'
-          }
+          { required: true, message: '请输入用户角色类型', trigger: 'blur' }
         ]
       }
     }
@@ -538,7 +591,7 @@ export default {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
         const { data: res } = await this.$http.post(
-          `user/insert?usrType=${easyChangeRoleName(this.addForm.usrType)}`,
+          `user/insert?usrType=${this.addForm.usrType}`,
           this.addForm
         )
         if (res.code !== 200) {
@@ -560,7 +613,7 @@ export default {
           return this.$message.warning('数据被锁定无法进行操作')
         }
         const { data: res } = await this.$http.post(
-          `user/update?usrType=${easyChangeRoleName(this.editForm.usrType)}`,
+          `user/update?usrType=${this.editForm.usrType}`,
           this.editForm
         )
         if (res.code !== 200) {
@@ -643,19 +696,19 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../../assets/css/table.css';
-.el-form-item__error {
-  color: #f56c6c;
-  font-size: 12px;
-  line-height: 1;
-  padding-top: 4px;
-  position: absolute;
-  top: 116%;
-  left: 0;
-}
-.el-tag {
-  margin-left: 16px;
-  margin-top: 6px;
-  margin-bottom: 6px;
-}
+    @import '../../assets/css/table.css';
+  .el-form-item__error {
+    color: #f56c6c;
+    font-size: 12px;
+    line-height: 1;
+    padding-top: 4px;
+    position: absolute;
+    top: 116%;
+    left: 0;
+  }
+  .el-tag {
+    margin-left: 16px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
 </style>

@@ -34,10 +34,10 @@
         stripe
       >
         <el-table-column type="index" label="#" width="48px" align="center"/>
-        <el-table-column label="权限名称" prop="name" align="center"/>
+        <el-table-column label="权限名称" prop="name" align="center" width="148px"/>
         <el-table-column label="权限代码" prop="permission" align="center"/>
         <el-table-column label="路径名称" prop="url" align="center"/>
-        <el-table-column label="权限等级" prop="remark" align="center">
+        <el-table-column label="权限等级" prop="remark" align="center" width="148px">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.remark === '0'" type="info">零级</el-tag>
             <el-tag type="success" v-else-if="scope.row.remark === '1'">一级</el-tag>
@@ -98,8 +98,17 @@
         <el-form-item label="权限url" prop="url">
           <el-input v-model="editForm.url" disabled/>
         </el-form-item>
-        <el-form-item label="权限等级" prop="url">
-          <el-input v-model="editForm.remark"/>
+        <el-form-item label="权限等级" prop="remark">
+          <el-select v-model="editForm.remark" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+              <span style="float: left">{{ item.label }}</span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.value }}</span>
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -120,6 +129,20 @@ export default {
   name: 'Rights',
   data() {
     return {
+      // 权限等级选项
+      options: [{
+        value: '3',
+        label: '管理级别'
+      }, {
+        value: '2',
+        label: '教师级别'
+      }, {
+        value: '1',
+        label: '学生级别'
+      }, {
+        value: '0',
+        label: '匿名级别'
+      }],
       // 控制修改用户对话框的显示
       editDialogVisible: false,
       // 页面数据显示条数
@@ -144,13 +167,7 @@ export default {
           { required: true, message: '请输入权限名' }
         ],
         remark: [
-          { required: true, message: '请输入权限等级' },
-          {
-            type: 'enum',
-            enum: ['0', '1', '2', '3'],
-            message: '权限等级必须为0-3的整数',
-            trigger: 'blur'
-          }
+          { required: true, message: '请选择权限等级' }
         ]
       }
     }

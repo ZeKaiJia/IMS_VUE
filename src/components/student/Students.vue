@@ -54,68 +54,100 @@
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
             <el-row>
-              <el-tag type="info" effect="plain">
-                联系电话
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.stuPhone}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  联系电话
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.stuPhone}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                电子邮箱
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.stuEmail}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  电子邮箱
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.stuEmail}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                出生日期
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.stuBirthday}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  出生日期
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.stuBirthday}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                年龄
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.stuAge}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  年龄
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.stuAge}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                创建时间
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.utcCreate}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  创建时间
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.utcCreate}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                修改时间
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.utcModify}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  修改时间
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.utcModify}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                修改人
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  修改人
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
+                </el-tag>
+              </el-col>
             </el-row>
             <el-row>
-              <el-tag type="info" effect="plain">
-                备注
-              </el-tag>
-              <el-tag type="info" effect="plain">
-                {{scope.row.remark === '' ? '空' : scope.row.remark}}
-              </el-tag>
+              <el-col span="3" align="right">
+                <el-tag type="info" effect="plain">
+                  备注
+                </el-tag>
+              </el-col>
+              <el-col span="10">
+                <el-tag type="info" effect="plain">
+                  {{scope.row.remark === '' ? '空' : scope.row.remark}}
+                </el-tag>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
@@ -203,7 +235,7 @@
         :model="addForm"
         :rules="addFormRules"
         ref="addFormRef"
-        label-width="100px"
+        label-width="80px"
       >
         <el-form-item label="学号" prop="stuId">
           <el-input v-model="addForm.stuId"/>
@@ -212,19 +244,35 @@
           <el-input v-model="addForm.stuName" />
         </el-form-item>
         <el-form-item label="性别" prop="stuGender">
-          <el-input v-model="addForm.stuGender" />
+          <el-select v-model="addForm.stuGender" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="生日" prop="stuBirthday">
-          <el-input v-model="addForm.stuBirthday" />
+          <el-date-picker
+            v-model="addForm.stuBirthday"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="邮箱" prop="stuEmail">
           <el-input v-model="addForm.stuEmail" />
         </el-form-item>
         <el-form-item label="手机号" prop="stuPhone">
-          <el-input v-model="addForm.stuPhone" />
+          <el-input v-model.number="addForm.stuPhone" type="number"/>
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="addForm.remark" />
+        <el-form-item label="备注" prop="remark" >
+          <el-input
+            v-model="addForm.remark"
+            maxlength="20"
+            placeholder="请输入备注"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -245,7 +293,7 @@
         :model="editForm"
         :rules="editFormRules"
         ref="editFormRef"
-        label-width="100px"
+        label-width="80px"
       >
         <el-form-item label="学号" prop="stuId">
           <el-input v-model="editForm.stuId" disabled />
@@ -254,19 +302,35 @@
           <el-input v-model="editForm.stuName" />
         </el-form-item>
         <el-form-item label="性别" prop="stuGender">
-          <el-input v-model="editForm.stuGender" />
+          <el-select v-model="editForm.stuGender" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="生日" prop="stuBirthday">
-          <el-input v-model="editForm.stuBirthday" />
+          <el-date-picker
+            v-model="editForm.stuBirthday"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="邮箱" prop="stuEmail">
           <el-input v-model="editForm.stuEmail" />
         </el-form-item>
         <el-form-item label="手机号" prop="stuPhone">
-          <el-input v-model="editForm.stuPhone" />
+          <el-input v-model.number="editForm.stuPhone" type="number"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="editForm.remark" placeholder="请输入备注"/>
+          <el-input
+            v-model="editForm.remark"
+            placeholder="请输入备注"
+            maxlength="20"
+            show-word-limit
+          />
         </el-form-item>
       </el-form>
       <!--底部按钮区-->
@@ -287,7 +351,7 @@ import {
   easyTimestamp,
   operateAge,
   timestampToTime,
-  checkError
+  checkError, easyChangeTimeStamp
 } from '../../plugins/utils'
 export default {
   name: 'Student',
@@ -301,15 +365,6 @@ export default {
         callback(new Error('请输入合法的邮箱'))
       }
     }
-    // 验证日期
-    const checkDate = (rule, value, callback) => {
-      const regDate = /(([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})-(((0[13578]|1[02])-(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)-(0[1-9]|[12][0-9]|30))|(02-(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))-02-29)/
-      if (regDate.test(value)) {
-        return callback()
-      } else {
-        callback(new Error('请输入合法的日期格式'))
-      }
-    }
     // 验证手机号
     var checkMobile = (rule, value, callback) => {
       const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
@@ -320,6 +375,14 @@ export default {
       }
     }
     return {
+      // 性别选择
+      options: [{
+        value: '1',
+        label: '男'
+      }, {
+        value: '0',
+        label: '女'
+      }],
       // 页面数据显示条数
       pageSize: 7,
       // 当前页数
@@ -370,17 +433,10 @@ export default {
           { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
         ],
         stuGender: [
-          { required: true, message: '请输入学生性别', trigger: 'blur' },
-          {
-            type: 'enum',
-            enum: ['男', '女'],
-            message: '角色类型必须为男或女',
-            trigger: 'blur'
-          }
+          { required: true, message: '请选择学生性别', trigger: 'blur' }
         ],
         stuBirthday: [
-          { required: true, message: '请输入学生生日', trigger: 'blur' },
-          { validator: checkDate, trigger: 'blur' }
+          { required: true, message: '请选择学生生日', trigger: 'blur' }
         ],
         stuEmail: [
           { required: true, message: '请输入学生邮箱', trigger: 'blur' },
@@ -389,9 +445,6 @@ export default {
         stuPhone: [
           { required: true, message: '请输入用户联系电话', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
-        ],
-        remark: [
-          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       },
       editFormRules: {
@@ -400,17 +453,10 @@ export default {
           { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
         ],
         stuGender: [
-          { required: true, message: '请输入学生性别', trigger: 'blur' },
-          {
-            type: 'enum',
-            enum: ['男', '女'],
-            message: '角色类型必须为男或女',
-            trigger: 'blur'
-          }
+          { required: true, message: '请输入学生性别', trigger: 'blur' }
         ],
         stuBirthday: [
-          { required: true, message: '请输入学生生日', trigger: 'blur' },
-          { validator: checkDate, trigger: 'blur' }
+          { required: true, message: '请输入学生生日', trigger: 'blur' }
         ],
         stuEmail: [
           { required: true, message: '请输入学生邮箱', trigger: 'blur' },
@@ -419,9 +465,6 @@ export default {
         stuPhone: [
           { required: true, message: '请输入用户联系电话', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
-        ],
-        remark: [
-          { max: 10, message: '长度在10个字符以内', trigger: 'blur' }
         ]
       }
     }
@@ -521,6 +564,7 @@ export default {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
         this.addForm.stuGender = easyChangeGender(this.addForm.stuGender)
+        this.addForm.stuBirthday = easyChangeTimeStamp(this.addForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/insert',
           this.addForm
@@ -544,6 +588,7 @@ export default {
           return this.$message.warning('数据被锁定无法进行操作')
         }
         this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
+        this.editForm.stuBirthday = easyChangeTimeStamp(this.editForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/update',
           this.editForm
@@ -605,9 +650,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.el-tag {
-  margin-left: 16px;
-  margin-top: 6px;
-  margin-bottom: 6px;
-}
+  .el-tag {
+    margin-left: 16px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+  /*.el-form-item .el-form-item__content .el-input {*/
+  /*  width: 80%;*/
+  /*}*/
 </style>

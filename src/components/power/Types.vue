@@ -13,34 +13,6 @@
         <el-col :span="3">
           <el-button type="primary" disabled>添加角色</el-button>
         </el-col>
-        <el-col :span="1">
-          <el-tooltip
-            class="item"
-            effect="light"
-            placement="right"
-            style="margin-top: 10px"
-            content="anno为匿名权限，任何人都可以访问，无需添加">
-            <el-button style="padding: 0; border-color: white" circle>
-              <i class="el-icon-info" style="font-size: 20px"/>
-            </el-button>
-          </el-tooltip>
-        </el-col>
-        <el-col :span="7">
-          <el-alert
-            title="请不要删除所有管理员权限"
-            style="min-width: 280px; max-width: 290px"
-            type="error"
-            show-icon>
-          </el-alert>
-        </el-col>
-        <el-col :span="8">
-          <el-alert
-            title="修改完权限后的用户重新登录即可生效"
-            style="min-width: 380px; max-width: 390px"
-            type="info"
-            show-icon>
-          </el-alert>
-        </el-col>
       </el-row>
       <el-table
         :data="typeList"
@@ -107,11 +79,13 @@
     <el-dialog
       title="分配权限"
       :visible.sync="manageDialogVisible"
-      width="65%"
+      width="75%"
+      @close="reset"
     >
       <div style="text-align: center" class="ddiv">
         <!--穿梭框候选区-->
         <el-transfer
+          v-loading="loading"
           filterable
           style="text-align: left; display: inline-block"
           v-model="manageValue"
@@ -122,12 +96,27 @@
             noChecked: '${total}',
             hasChecked: '${checked}/${total}'
           }"
+          ref="myTransfer"
         />
       </div>
       <!--底部按钮区-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="manageDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="manage">修 改</el-button>
+      </span>
+    </el-dialog>
+    <!--提示对话框-->
+    <el-dialog
+      title="提醒！"
+      :visible.sync="infoDialogVisible"
+      width="35%"
+    >
+      <li style="color: darkred">请不要删除所有管理员权限</li>
+      <li>修改完权限后的用户重新登录即可生效</li>
+      <li>anno为匿名权限，任何人都可以访问，无需添加</li>
+      <li>即使给学生或教师分配管理员权限也无权调用管理员接口</li>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="infoDialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -140,6 +129,8 @@ export default {
   name: 'Types',
   data() {
     return {
+      // 分配权限的加载动画
+      loading: false,
       // 记录正在操作的角色
       manageRole: '',
       // 分配权限中所有的权限
@@ -150,6 +141,8 @@ export default {
       managePermission: [],
       // 控制分配权限对话框的显示
       manageDialogVisible: false,
+      // 控制提示对话框的显示
+      infoDialogVisible: false,
       // 角色列表
       typeList: [],
       // 角色总数
@@ -172,6 +165,9 @@ export default {
   created() {
     this.$message.warning('角色暂不支持添加')
     this.getTypeList()
+    setTimeout(() => {
+      this.infoDialogVisible = true
+    }, 1000)
   },
   methods: {
     // 获取角色列表
@@ -235,19 +231,23 @@ export default {
       for (let i = 0; i < allPermissions.data.length; i++) {
         this.manageData.push({
           key: i,
-          label: allPermissions.data[i].permission
+          label: allPermissions.data[i].name + ' ' + allPermissions.data[i].permission,
+          per: allPermissions.data[i].permission
         })
       }
-      this.managePermission.forEach((permission, index) => {
-        for (let i = 0; i < this.manageData.length; i++) {
-          if (this.manageData[i].label === permission) {
-            this.manageValue.push(i)
+      if (enablePermissions.code === 200) {
+        this.managePermission.forEach((permission, index) => {
+          for (let i = 0; i < this.manageData.length; i++) {
+            if (this.manageData[i].per === permission) {
+              this.manageValue.push(i)
+            }
           }
-        }
-      })
+        })
+      }
     },
     // 处理权限的变化
     async manage () {
+      this.loading = true
       let flag = true
       const { data: preRes } = await this.$http.post(
         `permission/preManagePermission?role=${this.manageRole}`
@@ -257,18 +257,27 @@ export default {
       }
       for (let i = 0; i < this.manageValue.length; i++) {
         const { data: res } = await this.$http.post(
-          `permission/managePermission?role=${this.manageRole}&permission=${this.manageData[this.manageValue[i]].label}`
+          `permission/managePermission?role=${this.manageRole}&permission=${this.manageData[this.manageValue[i]].per}`
         )
         if (res.code !== 200) {
           flag = false
         }
       }
+      this.loading = false
       if (!flag) {
         this.manageDialogVisible = false
         return this.$message.error('分配权限失败!')
       }
       this.manageDialogVisible = false
       return this.$message.success('分配权限成功!')
+    },
+    // 重置穿梭框搜索数据
+    reset() {
+      if (this.$refs.myTransfer) {
+        this.$refs.myTransfer.$children['0']._data.query = ''
+        // 清空右边搜索
+        this.$refs.myTransfer.$children['3']._data.query = ''
+      }
     }
   }
 }
@@ -276,7 +285,7 @@ export default {
 
 <style lang="less" scoped>
   .el-transfer /deep/ .el-transfer-panel {
-    width: 270px !important;
+    width: 350px !important;
     height: 400px;
   }
   .ddiv /deep/ .el-transfer-panel__filter {
