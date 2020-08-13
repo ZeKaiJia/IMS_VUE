@@ -64,6 +64,7 @@
 
 <script>
 import SIdentify from './util/Identify'
+import { checkError } from '../plugins/utils'
 export default {
   name: 'login',
   data() {
@@ -122,7 +123,7 @@ export default {
           this.loginForm
         )
         if (result.code !== 200) {
-          return this.$message.error('用户名或密码错误，请重试')
+          return this.$message.error(checkError(result) + '！请重试')
         } else {
           const { data: type } = await this.$http.get(`role/findRoleByUserName?usrName=${result.data.usrName}`)
           window.sessionStorage.setItem('name', result.data.usrName)

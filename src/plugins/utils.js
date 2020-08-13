@@ -72,9 +72,17 @@ function sliceData (list, currentPage, pageSize) {
 }
 // 检查错误原因
 function checkError (res) {
-  if (res === '该账户不存在' || res === '该账户已锁定' || res === '密码错误请重试' ||
+  if (res === '该账户不存在' || res === '该账户已锁定' || res === '密码错误' ||
     res === '没有相应权限' || res === '操作失败请重试') {
     return res
+  } else if (res.code === 401) {
+    return '该账户已锁定'
+  } else if (res.code === 404) {
+    return '该账户不存在'
+  } else if (res.code === 412) {
+    return '密码错误'
+  } else if (res.code === 408) {
+    return '服务器内部错误'
   } else {
     return ''
   }

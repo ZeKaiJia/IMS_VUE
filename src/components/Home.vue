@@ -168,9 +168,9 @@ export default {
   name: 'Home',
   methods: {
     async logout() {
-      await this.$http.get('user/logout')
       window.sessionStorage.clear()
       await this.$router.push('/login')
+      await this.$http.get('user/logout')
     },
     // 获取所有的菜单
     async getMenuList() {

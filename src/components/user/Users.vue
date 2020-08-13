@@ -674,6 +674,7 @@ export default {
         return this.$message.error('查询用户信息失败' + checkError(res))
       }
       res.data.usrType = await this.selectEachRole(usrName)
+      res.data.usrType = easyChangeRoleName(res.data.usrType)
       this.editForm = res.data
       this.editDialogVisible = true
     },

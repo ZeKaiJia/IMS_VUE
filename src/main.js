@@ -14,7 +14,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 // 配置请求的根路径
-// axios.defaults.baseURL = 'http://47.102.223.230:9988'
+// axios.defaults.baseURL = 'http://test.ims.cool:9988'
 axios.defaults.baseURL = 'http://localhost:9988'
 axios.defaults.withCredentials = true
 // // axios请求拦截
@@ -54,7 +54,8 @@ axios.interceptors.response.use(
     if (accessToken && accessToken !== '') {
       localStorage.setItem('accessToken', accessToken)
     }
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:9999'
+    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
   },
   function(error) {
