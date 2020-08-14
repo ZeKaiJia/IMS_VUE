@@ -13,6 +13,7 @@ import StuTranscripts from '../components/score/StuTranscripts'
 import SubTranscripts from '../components/score/SubTranscripts'
 import Statuses from '../components/status/Statuses'
 import NotFound404 from '../components/NotFound404'
+import { getCookie } from '../plugins/utils'
 Vue.use(Router)
 
 // eslint-disable-next-line no-undef
@@ -42,13 +43,13 @@ const router = new Router({
 })
 // 挂载路由导航守卫
 router.beforeEach((to, from, next) => {
-  // 从sessionStorage中获取保存的token
-  const tokenStr = window.sessionStorage.getItem('token')
+  // 从cookie中获取保存的数据
+  const cookie = getCookie('rememberMe')
   if (to.path === '/login') {
     return next()
   } else {
     // 没有token强制跳转
-    if (!tokenStr) {
+    if (!cookie) {
       return next('/login')
     } else {
       next()

@@ -76,12 +76,10 @@ export default {
     }
   },
   created() {
-    window.sessionStorage.setItem('activePath', '/welcome')
     this.$parent.activePath = '/welcome'
   },
   methods: {
     jump(activePath) {
-      window.sessionStorage.setItem('activePath', activePath)
       this.$parent.activePath = activePath
       this.$router.push(activePath)
     },

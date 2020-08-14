@@ -64,7 +64,7 @@
 
 <script>
 import SIdentify from './util/Identify'
-import { checkError } from '../plugins/utils'
+import { checkError, setCookie } from '../plugins/utils'
 export default {
   name: 'login',
   data() {
@@ -126,10 +126,8 @@ export default {
           return this.$message.error(checkError(result) + '！请重试')
         } else {
           const { data: type } = await this.$http.get(`role/findRoleByUserName?usrName=${result.data.usrName}`)
-          window.sessionStorage.setItem('name', result.data.usrName)
-          window.sessionStorage.setItem('nick', result.data.usrNick)
-          window.sessionStorage.setItem('type', type.data)
-          window.sessionStorage.setItem('token', result.data.utcCreate)
+          setCookie('type', type.data, 36000)
+          setCookie('nick', result.data.usrNick, 36000)
           this.$message.success('欢迎您，' + result.data.usrName)
           await this.$router.push({ path: '/home' }, () => {}, () => {})
         }

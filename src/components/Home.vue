@@ -80,6 +80,8 @@
 </template>
 
 <script>
+import { clearCookie, getCookie } from '../plugins/utils'
+
 export default {
   data() {
     return {
@@ -162,19 +164,20 @@ export default {
   },
   created() {
     this.getMenuList()
-    this.activePath = window.sessionStorage.getItem('activePath')
-    this.showUser = window.sessionStorage.getItem('nick')
+    this.showUser = getCookie('nick')
   },
   name: 'Home',
   methods: {
     async logout() {
       window.sessionStorage.clear()
+      clearCookie('nick')
+      clearCookie('type')
       await this.$router.push('/login')
       await this.$http.get('user/logout')
     },
     // 获取所有的菜单
     async getMenuList() {
-      const type = window.sessionStorage.getItem('type')
+      const type = getCookie('type')
       if (type === 'teacher') {
         this.menuList = this.menuList.slice(2, 6)
       } else if (type === 'student') {
@@ -185,7 +188,6 @@ export default {
       this.isCollapse = !this.isCollapse
     },
     saveNavState(activePath) {
-      window.sessionStorage.setItem('activePath', activePath)
       this.activePath = activePath
     }
   }

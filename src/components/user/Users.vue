@@ -386,8 +386,6 @@ export default {
         value: 'student',
         label: '学生'
       }],
-      // 当前用户
-      currentUserName: '',
       // 获取密码用户
       checkPassUser: '',
       // 显示密码
@@ -482,7 +480,6 @@ export default {
   },
   created() {
     this.getUserList()
-    this.currentUserName = window.sessionStorage.getItem('name')
   },
   methods: {
     // 获取用户列表

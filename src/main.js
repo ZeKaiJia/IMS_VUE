@@ -17,11 +17,6 @@ import 'quill/dist/quill.bubble.css'
 // axios.defaults.baseURL = 'http://test.ims.cool:9988'
 axios.defaults.baseURL = 'http://localhost:9988'
 axios.defaults.withCredentials = true
-// // axios请求拦截
-// axios.interceptors.request.use((config) => {
-//   config.headers.Authorization = window.sessionStorage.getItem('token')
-//   return config
-// })
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
