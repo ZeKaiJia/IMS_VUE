@@ -2,7 +2,7 @@
   <div>
     <!--面包屑导航区-->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/home' }" @click.native="changeMenu('/')">首页</el-breadcrumb-item>
       <el-breadcrumb-item>权限管理</el-breadcrumb-item>
       <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
@@ -129,6 +129,8 @@ export default {
   name: 'Types',
   data() {
     return {
+      // 路由url
+      routeUrl: '/types',
       // 分配权限的加载动画
       loading: false,
       // 记录正在操作的角色
@@ -163,7 +165,8 @@ export default {
     }
   },
   created() {
-    this.$message.warning('角色暂不支持添加')
+    this.information.$emit('activePath', this.routeUrl)
+    this.$message.warning('角色暂不支持增删')
     this.getTypeList()
     setTimeout(() => {
       this.infoDialogVisible = true
@@ -278,6 +281,10 @@ export default {
         // 清空右边搜索
         this.$refs.myTransfer.$children['3']._data.query = ''
       }
+    },
+    // 面包屑导航切换
+    changeMenu(activePath) {
+      this.information.$emit('activePath', activePath)
     }
   }
 }

@@ -2,7 +2,7 @@
   <div>
     <!--面包屑导航区-->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/home' }" @click.native="changeMenu('/')">首页</el-breadcrumb-item>
       <el-breadcrumb-item>课程管理</el-breadcrumb-item>
       <el-breadcrumb-item>课程列表</el-breadcrumb-item>
     </el-breadcrumb>
@@ -52,48 +52,48 @@
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   创建时间
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.utcCreate}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   修改时间
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.utcModify}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   修改人
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   备注
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.remark === '' ? '空' : scope.row.remark}}
                 </el-tag>
@@ -266,6 +266,8 @@ export default {
   name: 'Subjects',
   data() {
     return {
+      // 路由url
+      routeUrl: '/subjects',
       // 页面数据显示条数
       pageSize: 7,
       // 当前页数
@@ -335,6 +337,7 @@ export default {
     }
   },
   created() {
+    this.information.$emit('activePath', this.routeUrl)
     this.getSubjectList()
   },
   methods: {
@@ -351,6 +354,10 @@ export default {
       this.subjectList = res.data
       // 根据当前页数和每页显示数控大小截取数据
       this.showSubList = sliceData(this.subjectList, this.currentPage, this.pageSize)
+      if (this.showSubList.length === 0) {
+        this.currentPage = this.currentPage - 1
+        this.showSubList = sliceData(this.subjectList, this.currentPage, this.pageSize)
+      }
       this.total = res.data.length
     },
     // 查找课程
@@ -497,6 +504,10 @@ export default {
       this.currentPage = val
       // 根据当前页数和每页显示数控大小截取数据
       this.showSubList = sliceData(this.subjectList, this.currentPage, this.pageSize)
+    },
+    // 面包屑导航切换
+    changeMenu(activePath) {
+      this.information.$emit('activePath', activePath)
     }
   }
 }

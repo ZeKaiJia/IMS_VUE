@@ -2,7 +2,7 @@
   <div>
     <!--面包屑导航区-->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/home' }" @click.native="changeMenu('/')">首页</el-breadcrumb-item>
       <el-breadcrumb-item>学生管理</el-breadcrumb-item>
       <el-breadcrumb-item>学生列表</el-breadcrumb-item>
     </el-breadcrumb>
@@ -54,96 +54,96 @@
         <el-table-column type="expand" label="详细" width="64px" align="center">
           <template slot-scope="scope">
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   联系电话
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.stuPhone}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   电子邮箱
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.stuEmail}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   出生日期
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.stuBirthday}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   年龄
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.stuAge}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   创建时间
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.utcCreate}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   修改时间
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.utcModify}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   修改人
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.modifyBy === '' ? '空' : scope.row.modifyBy}}
                 </el-tag>
               </el-col>
             </el-row>
             <el-row>
-              <el-col span="3" align="right">
+              <el-col :span="3" align="right">
                 <el-tag type="info" effect="plain">
                   备注
                 </el-tag>
               </el-col>
-              <el-col span="10">
+              <el-col :span="10">
                 <el-tag type="info" effect="plain">
                   {{scope.row.remark === '' ? '空' : scope.row.remark}}
                 </el-tag>
@@ -315,7 +315,8 @@
           <el-date-picker
             v-model="editForm.stuBirthday"
             type="date"
-            placeholder="选择日期">
+            placeholder="选择日期"
+          >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="邮箱" prop="stuEmail">
@@ -351,7 +352,7 @@ import {
   easyTimestamp,
   operateAge,
   timestampToTime,
-  checkError, easyChangeTimeStamp
+  checkError
 } from '../../plugins/utils'
 export default {
   name: 'Student',
@@ -375,12 +376,14 @@ export default {
       }
     }
     return {
+      // 路由url
+      routeUrl: '/students',
       // 性别选择
       options: [{
-        value: '1',
+        value: '男',
         label: '男'
       }, {
-        value: '0',
+        value: '女',
         label: '女'
       }],
       // 页面数据显示条数
@@ -470,6 +473,7 @@ export default {
     }
   },
   created() {
+    this.information.$emit('activePath', this.routeUrl)
     this.getStudentList()
   },
   methods: {
@@ -489,6 +493,10 @@ export default {
       this.studentList = res.data
       // 根据当前页数和每页显示数控大小截取数据
       this.showStuList = sliceData(this.studentList, this.currentPage, this.pageSize)
+      if (this.showStuList.length === 0) {
+        this.currentPage = this.currentPage - 1
+        this.showStuList = sliceData(this.studentList, this.currentPage, this.pageSize)
+      }
       this.total = res.data.length
     },
     // 查找学生
@@ -555,7 +563,7 @@ export default {
         return this.$message.error('查询用户信息失败' + checkError(res))
       }
       this.editForm = res.data
-      this.editForm.stuBirthday = easyTimestamp(this.editForm.stuBirthday.valueOf())
+      this.editForm.stuBirthday = easyTimestamp(this.editForm.stuBirthday)
       this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
       this.editDialogVisible = true
     },
@@ -564,7 +572,7 @@ export default {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
         this.addForm.stuGender = easyChangeGender(this.addForm.stuGender)
-        this.addForm.stuBirthday = easyChangeTimeStamp(this.addForm.stuBirthday)
+        this.addForm.stuBirthday = easyTimestamp(this.addForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/insert',
           this.addForm
@@ -588,7 +596,7 @@ export default {
           return this.$message.warning('数据被锁定无法进行操作')
         }
         this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
-        this.editForm.stuBirthday = easyChangeTimeStamp(this.editForm.stuBirthday)
+        this.editForm.stuBirthday = easyTimestamp(this.editForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/update',
           this.editForm
@@ -644,6 +652,10 @@ export default {
       this.currentPage = val
       // 根据当前页数和每页显示数控大小截取数据
       this.showStuList = sliceData(this.studentList, this.currentPage, this.pageSize)
+    },
+    // 面包屑导航切换
+    changeMenu(activePath) {
+      this.information.$emit('activePath', activePath)
     }
   }
 }

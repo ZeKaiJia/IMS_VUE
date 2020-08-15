@@ -20,6 +20,7 @@ axios.defaults.withCredentials = true
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
+Vue.prototype.information = new Vue()
 
 // 注册富文本编辑器
 Vue.use(VueQuillEditor)

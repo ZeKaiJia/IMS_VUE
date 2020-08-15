@@ -2,7 +2,7 @@
   <div>
     <!--面包屑导航区-->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/home' }" @click.native="changeMenu('/')">首页</el-breadcrumb-item>
       <el-breadcrumb-item>成绩管理</el-breadcrumb-item>
       <el-breadcrumb-item>课程成绩单</el-breadcrumb-item>
     </el-breadcrumb>
@@ -117,6 +117,8 @@ export default {
   name: 'subTranscripts',
   data() {
     return {
+      // 路由url
+      routeUrl: '/subTranscripts',
       // 显示成绩单
       show: false,
       // 搜索信息
@@ -171,6 +173,9 @@ export default {
       loading: true,
       mainLoading: true
     }
+  },
+  created () {
+    this.information.$emit('activePath', this.routeUrl)
   },
   methods: {
     // 重置卡片显示
@@ -245,6 +250,10 @@ export default {
     // 图片加载失败
     loadError() {
       this.loading = false
+    },
+    // 面包屑导航切换
+    changeMenu(activePath) {
+      this.information.$emit('activePath', activePath)
     }
   }
 }

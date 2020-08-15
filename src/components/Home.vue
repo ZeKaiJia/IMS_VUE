@@ -31,6 +31,7 @@
           :unique-opened="true"
           :collapse-transition="false"
           :default-active="activePath"
+          :default-openeds="opened"
         >
           <!--一级菜单-->
           <el-submenu
@@ -81,7 +82,6 @@
 
 <script>
 import { clearCookie, getCookie } from '../plugins/utils'
-
 export default {
   data() {
     return {
@@ -159,12 +159,17 @@ export default {
       // 默认不折叠
       isCollapse: false,
       // 被激活的地址
-      activePath: ''
+      activePath: '',
+      // 被打开的菜单
+      opened: []
     }
   },
   created() {
     this.getMenuList()
     this.showUser = getCookie('nick')
+    this.information.$on('activePath', path => {
+      this.activePath = path
+    })
   },
   name: 'Home',
   methods: {

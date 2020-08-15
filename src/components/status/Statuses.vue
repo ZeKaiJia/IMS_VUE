@@ -2,7 +2,7 @@
   <div>
     <!--面包屑导航区-->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/home' }" @click.native="changeMenu('/')">首页</el-breadcrumb-item>
       <el-breadcrumb-item>数据统计</el-breadcrumb-item>
       <el-breadcrumb-item>综合数据</el-breadcrumb-item>
     </el-breadcrumb>
@@ -32,10 +32,14 @@ export default {
   name: 'Statuses',
   data() {
     return {
+      // 路由url
+      routeUrl: '/statuses',
+      // 用户列表
       userList: []
     }
   },
   created() {
+    this.information.$emit('activePath', this.routeUrl)
   },
   // DOM初始化完毕后的操作
   async mounted () {
@@ -231,6 +235,10 @@ export default {
     }
   },
   methods: {
+    // 面包屑导航切换
+    changeMenu(activePath) {
+      this.information.$emit('activePath', activePath)
+    }
   }
 }
 </script>

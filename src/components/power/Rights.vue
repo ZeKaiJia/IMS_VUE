@@ -2,7 +2,7 @@
   <div>
     <!--面包屑导航区-->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/home' }" @click.native="changeMenu('/')">首页</el-breadcrumb-item>
       <el-breadcrumb-item>权限管理</el-breadcrumb-item>
       <el-breadcrumb-item>权限列表</el-breadcrumb-item>
     </el-breadcrumb>
@@ -129,6 +129,8 @@ export default {
   name: 'Rights',
   data() {
     return {
+      // 路由url
+      routeUrl: '/rights',
       // 权限等级选项
       options: [{
         value: '3',
@@ -173,7 +175,8 @@ export default {
     }
   },
   created() {
-    this.$message.warning('权限暂不支持自定义')
+    this.information.$emit('activePath', this.routeUrl)
+    this.$message.warning('权限暂不支持增删')
     this.getRightList()
   },
   methods: {
@@ -185,6 +188,10 @@ export default {
       }
       this.rightsList = res.data
       this.showRightsList = sliceData(this.rightsList, this.currentPage, this.pageSize)
+      if (this.showRightsList.length === 0) {
+        this.currentPage = this.currentPage - 1
+        this.showRightsList = sliceData(this.rightsList, this.currentPage, this.pageSize)
+      }
       this.total = res.data.length
     },
     // 监听修改权限对话框的点击事件
@@ -232,6 +239,10 @@ export default {
     // 监听添加用户对话框的关闭事件
     editDialogClosed() {
       this.$refs.editFormRef.resetFields()
+    },
+    // 面包屑导航切换
+    changeMenu(activePath) {
+      this.information.$emit('activePath', activePath)
     }
   }
 }

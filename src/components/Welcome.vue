@@ -76,11 +76,10 @@ export default {
     }
   },
   created() {
-    this.$parent.activePath = '/welcome'
   },
   methods: {
     jump(activePath) {
-      this.$parent.activePath = activePath
+      this.information.$emit('activePath', activePath)
       this.$router.push(activePath)
     },
     // 图片加载成功

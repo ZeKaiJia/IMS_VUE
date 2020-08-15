@@ -116,18 +116,22 @@ export default {
     submitLoginForm() {
       // BUG
       this.$refs.loginFormRef.validate(async (valid) => {
-        if (!valid) return this.$message.error('出错啦，再试一次')
+        if (!valid) {
+          this.refreshCode()
+          return this.$message.error('出错啦，再试一次')
+        }
         // eslint-disable-next-line
         const { data: result } = await this.$http.post(
           'user/login',
           this.loginForm
         )
         if (result.code !== 200) {
+          this.refreshCode()
           return this.$message.error(checkError(result) + '！请重试')
         } else {
           const { data: type } = await this.$http.get(`role/findRoleByUserName?usrName=${result.data.usrName}`)
-          setCookie('type', type.data, 36000)
-          setCookie('nick', result.data.usrNick, 36000)
+          setCookie('type', type.data, 24 * 60 * 60)
+          setCookie('nick', result.data.usrNick, 24 * 60 * 60)
           this.$message.success('欢迎您，' + result.data.usrName)
           await this.$router.push({ path: '/home' }, () => {}, () => {})
         }

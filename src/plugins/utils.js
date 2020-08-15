@@ -34,16 +34,24 @@ function easyTimestamp(timestamp) {
     date.getDate() < 10 ? '0' + date.getDate() + ' ' : date.getDate() + ' '
   return Y + M + D
 }
+// 日期转时间戳
+function transDate(time) {
+  const date = new Date()
+  date.setFullYear(time.substring(0, 4))
+  date.setMonth(time.substring(5, 7) - 1)
+  date.setDate(time.substring(8, 10))
+  return Date.parse(date)
+}
 // 学生性别快速转换
 function easyChangeGender (transData) {
-  if (transData === 1) {
+  if (transData === '1' || transData === 1) {
     return '男'
-  } else if (transData === 0) {
+  } else if (transData === '0' || transData === 0) {
     return '女'
   } else if (transData === '男') {
-    return 1
+    return '1'
   } else {
-    return 0
+    return '0'
   }
 }
 // 计算学生年龄
@@ -103,11 +111,6 @@ function easyChangeRoleName (usrType) {
     return '学生'
   }
 }
-// 获得UTC的标准时间（+8）
-function easyChangeTimeStamp (date) {
-  date = date.setHours(date.getHours() + 8)
-  return date
-}
 // 设置cookie
 function setCookie(name, value, seconds) {
   seconds = seconds || 0 // seconds有值就直接赋值，没有为0，这个根php不一样。
@@ -147,8 +150,8 @@ export {
   sliceData,
   checkError,
   easyChangeRoleName,
-  easyChangeTimeStamp,
   setCookie,
   getCookie,
-  clearCookie
+  clearCookie,
+  transDate
 }
