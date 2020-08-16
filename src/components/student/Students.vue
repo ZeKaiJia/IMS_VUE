@@ -49,6 +49,7 @@
         :header-cell-style="{background:'#eef1f6',color:'#606266'}"
         border
         stripe
+        v-loading="loading"
       >
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
@@ -216,7 +217,7 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage"
+        :current-page.sync="currentPage"
         :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
@@ -229,6 +230,7 @@
       :visible.sync="addDialogVisible"
       width="50%"
       @close="addDialogClosed"
+      v-loading="dialogLoading"
     >
       <!--内容主题区域-->
       <el-form
@@ -287,6 +289,7 @@
       :visible.sync="editDialogVisible"
       width="50%"
       @close="editDialogClosed"
+      v-loading="dialogLoading"
     >
       <!--内容主题区域-->
       <el-form
@@ -376,6 +379,9 @@ export default {
       }
     }
     return {
+      // 开启加载
+      loading: true,
+      dialogLoading: true,
       // 路由url
       routeUrl: '/students',
       // 性别选择
@@ -479,8 +485,10 @@ export default {
   methods: {
     // 获取学生列表
     async getStudentList() {
+      this.loading = true
       const { data: res } = await this.$http.get('student/selectAll')
       if (res.code !== 200) {
+        this.loading = false
         return this.$message.error('获取学生列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
@@ -498,13 +506,16 @@ export default {
         this.showStuList = sliceData(this.studentList, this.currentPage, this.pageSize)
       }
       this.total = res.data.length
+      this.loading = false
     },
     // 查找学生
     async selectStudent() {
+      this.loading = true
       const { data: res } = await this.$http.get('student/selectById', {
         params: this.queryInfo
       })
       if (res.code !== 200) {
+        this.loading = false
         return this.$message.error('获取学生列表失败!' + checkError(res))
       }
       this.studentList = []
@@ -517,6 +528,7 @@ export default {
       // 定向搜索只可能查询到一条记录
       this.showStuList = this.studentList
       this.total = res.data.length
+      this.loading = false
     },
     // 监听 switch 开关的改变
     async studentStateChange(studentInfo) {
@@ -566,17 +578,20 @@ export default {
       this.editForm.stuBirthday = easyTimestamp(this.editForm.stuBirthday)
       this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
       this.editDialogVisible = true
+      this.dialogLoading = false
     },
     // 点击按钮添加学生信息
     addStudent() {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的学生信息后再提交')
+        this.dialogLoading = true
         this.addForm.stuGender = easyChangeGender(this.addForm.stuGender)
         this.addForm.stuBirthday = easyTimestamp(this.addForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/insert',
           this.addForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.addDialogVisible = false
           return this.$message.error('添加学生失败' + checkError(res))
@@ -595,12 +610,14 @@ export default {
           this.editDialogVisible = false
           return this.$message.warning('数据被锁定无法进行操作')
         }
+        this.dialogLoading = true
         this.editForm.stuGender = easyChangeGender(this.editForm.stuGender)
         this.editForm.stuBirthday = easyTimestamp(this.editForm.stuBirthday)
         const { data: res } = await this.$http.post(
           'student/update',
           this.editForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.editDialogVisible = false
           return this.$message.error('修改学生失败' + checkError(res))

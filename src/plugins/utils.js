@@ -84,9 +84,9 @@ function checkError (res) {
     res === '没有相应权限' || res === '操作失败请重试') {
     return res
   } else if (res.code === 401) {
-    return '该账户已锁定'
+    return '数据已锁定'
   } else if (res.code === 404) {
-    return '该账户不存在'
+    return '数据不存在'
   } else if (res.code === 412) {
     return '密码错误'
   } else if (res.code === 408) {

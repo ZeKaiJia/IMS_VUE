@@ -56,6 +56,7 @@
         :data="showUsrList"
         :header-cell-style="{background:'#eef1f6',color:'#606266'}"
         border
+        v-loading="loading"
       >
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
@@ -223,7 +224,7 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage"
+        :current-page.sync="currentPage"
         :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
@@ -243,6 +244,7 @@
         :rules="addFormRules"
         ref="addFormRef"
         label-width="100px"
+        v-loading="dialogLoading"
       >
         <el-form-item label="用户名" prop="usrName">
           <el-input v-model="addForm.usrName" />
@@ -301,6 +303,7 @@
         :rules="editFormRules"
         ref="editFormRef"
         label-width="100px"
+        v-loading="dialogLoading"
       >
         <el-form-item label="用户名" prop="usrName">
           <el-input v-model="editForm.usrName" disabled/>
@@ -357,7 +360,7 @@ export default {
   name: 'Users',
   data() {
     // 验证邮箱
-    var checkEmail = (rule, value, callback) => {
+    const checkEmail = (rule, value, callback) => {
       const regEmail = /^([a-zA-z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
       if (regEmail.test(value)) {
         return callback()
@@ -366,7 +369,7 @@ export default {
       }
     }
     // 验证手机号
-    var checkMobile = (rule, value, callback) => {
+    const checkMobile = (rule, value, callback) => {
       const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
       if (regMobile.test(value)) {
         return callback()
@@ -375,6 +378,9 @@ export default {
       }
     }
     return {
+      // 开启加载
+      loading: true,
+      dialogLoading: true,
       // 路由url
       routeUrl: '/users',
       // 角色类型选择
@@ -435,15 +441,15 @@ export default {
       addFormRules: {
         usrName: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+          { min: 2, max: 10, message: '长度在2到10个字符', trigger: 'blur' }
         ],
         usrPassword: [
           { required: true, message: '请输入用户密码', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+          { min: 6, max: 14, message: '长度在6到14个字符', trigger: 'blur' }
         ],
         usrNick: [
           { required: true, message: '请输入用户昵称', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+          { min: 2, max: 10, message: '长度在2到10个字符', trigger: 'blur' }
         ],
         usrPhone: [
           { required: true, message: '请输入用户联系电话', trigger: 'blur' },
@@ -460,11 +466,11 @@ export default {
       editFormRules: {
         usrPassword: [
           { required: true, message: '请输入用户密码', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+          { min: 6, max: 14, message: '长度在6到14个字符', trigger: 'blur' }
         ],
         usrNick: [
           { required: true, message: '请输入用户昵称', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在3到10个字符', trigger: 'blur' }
+          { min: 2, max: 10, message: '长度在2到10个字符', trigger: 'blur' }
         ],
         usrPhone: [
           { required: true, message: '请输入用户联系电话', trigger: 'blur' },
@@ -487,8 +493,10 @@ export default {
   methods: {
     // 获取用户列表
     async getUserList() {
+      this.loading = true
       const { data: res } = await this.$http.get('user/selectAll')
       if (res.code !== 200) {
+        this.loading = false
         return this.$message.error('获取用户列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
@@ -508,6 +516,7 @@ export default {
         this.showUsrList = sliceData(this.userList, this.currentPage, this.pageSize)
       }
       this.total = res.data.length
+      this.loading = false
     },
     // 获取用户角色
     async selectEachRole (usrName) {
@@ -516,10 +525,12 @@ export default {
     },
     // 查找用户
     async selectUser() {
+      this.loading = true
       const { data: res } = await this.$http.get('user/selectByName', {
         params: this.queryInfo
       })
       if (res.code !== 200) {
+        this.loading = false
         return this.$message.error('获取用户列表失败!' + checkError(res))
       }
       res.data.usrType = await this.selectEachRole(res.data.usrName)
@@ -534,6 +545,7 @@ export default {
       // 定向搜索只可能查询到一条记录
       this.showUsrList = this.userList
       this.total = res.data.length
+      this.loading = false
     },
     // 查看用户密码
     checkPassword(data) {
@@ -594,10 +606,12 @@ export default {
     addUser() {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的用户信息后再提交')
+        this.dialogLoading = true
         const { data: res } = await this.$http.post(
           `user/insert?usrType=${this.addForm.usrType}`,
           this.addForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.addDialogVisible = false
           return this.$message.error('添加用户失败' + checkError(res))
@@ -616,10 +630,12 @@ export default {
           this.editDialogVisible = false
           return this.$message.warning('数据被锁定无法进行操作')
         }
+        this.dialogLoading = true
         const { data: res } = await this.$http.post(
           `user/update?usrType=${this.editForm.usrType}`,
           this.editForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.editDialogVisible = false
           return this.$message.error('修改用户失败' + checkError(res))
@@ -658,17 +674,6 @@ export default {
       this.$message.success('删除用户成功')
       this.getUserList()
     },
-    // // 凸显身份识别
-    // tableRowClassName({ row, rowIndex }) {
-    //   if (row.usrType === '管理员') {
-    //     return 'admin-row'
-    //   } else if (row.usrType === '学生') {
-    //     return 'stu-row'
-    //   } else if (row.usrType === '教师') {
-    //     return 'tea-row'
-    //   }
-    //   return ''
-    // },
     // 监听修改用户对话框的点击事件
     async showEditDialog(usrName) {
       const { data: res } = await this.$http.get(
@@ -681,6 +686,7 @@ export default {
       res.data.usrType = easyChangeRoleName(res.data.usrType)
       this.editForm = res.data
       this.editDialogVisible = true
+      this.dialogLoading = false
     },
     // 当前页面显示数据条数改变事件
     // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys

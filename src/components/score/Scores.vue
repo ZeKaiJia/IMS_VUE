@@ -69,6 +69,7 @@
         :header-cell-style="{background:'#eef1f6',color:'#606266'}"
         border
         stripe
+        v-loading="loading"
       >
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
@@ -189,7 +190,7 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage"
+        :current-page.sync="currentPage"
         :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
@@ -202,6 +203,7 @@
       :visible.sync="addDialogVisible"
       width="50%"
       @close="addDialogClosed"
+      v-loading="dialogLoading"
     >
       <!--内容主题区域-->
       <el-form
@@ -240,6 +242,7 @@
       :visible.sync="editDialogVisible"
       width="50%"
       @close="editDialogClosed"
+      v-loading="dialogLoading"
     >
       <!--内容主题区域-->
       <el-form
@@ -291,6 +294,9 @@ export default {
       }
     }
     return {
+      // 开启加载
+      loading: true,
+      dialogLoading: true,
       // 路由url
       routeUrl: '/scores',
       // 页面数据显示条数
@@ -330,7 +336,7 @@ export default {
         ],
         subId: [
           { required: true, message: '请输入课程号', trigger: 'blur' },
-          { min: 3, max: 3, message: '课程号必须为3位数字', trigger: 'blur' }
+          { type: 'number', message: '课程号必须为数字', trigger: 'blur' }
         ],
         subScore: [
           { required: true, message: '请输入成绩', trigger: 'blur' },
@@ -357,8 +363,10 @@ export default {
   methods: {
     // 获取成绩列表
     async getScoreList () {
+      this.loading = true
       const { data: res } = await this.$http.get('score/selectAll')
       if (res.code !== 200) {
+        this.loading = false
         return this.$message.error('获取成绩列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
@@ -374,14 +382,17 @@ export default {
         this.showScoList = sliceData(this.scoreList, this.currentPage, this.pageSize)
       }
       this.total = res.data.length
+      this.loading = false
     },
     // 查找成绩
     async selectScore() {
+      this.loading = true
       if (this.queryInfo.stuId !== '' && this.queryInfo.subId !== '') {
         const { data: res } = await this.$http.get('score/selectByStudentAndSubjectId', {
           params: this.queryInfo
         })
         if (res.code !== 200) {
+          this.loading = false
           return this.$message.error('获取成绩列表失败!' + checkError(res))
         }
         this.scoreList = []
@@ -392,11 +403,13 @@ export default {
         // 定向搜索只可能查询到一条记录
         this.showScoList = this.scoreList
         this.total = res.data.length
+        this.loading = false
       } else if (this.queryInfo.stuId === '' && this.queryInfo.subId !== '') {
         const { data: res } = await this.$http.get(
           `score/selectBySubjectId?subId=${this.queryInfo.subId}`
         )
         if (res.code !== 200) {
+          this.loading = false
           return this.$message.error('获取成绩列表失败!' + checkError(res))
         }
         for (let i = 0; i < res.data.length; i++) {
@@ -408,11 +421,13 @@ export default {
         // 单项搜索多条数据
         this.showScoList = this.scoreList
         this.total = res.data.length
+        this.loading = false
       } else if (this.queryInfo.stuId !== '' && this.queryInfo.subId === '') {
         const { data: res } = await this.$http.get(
           `score/selectByStudentId?stuId=${this.queryInfo.stuId}`
         )
         if (res.code !== 200) {
+          this.loading = false
           return this.$message.error('获取成绩列表失败!' + checkError(res))
         }
         for (let i = 0; i < res.data.length; i++) {
@@ -424,7 +439,9 @@ export default {
         // 单项搜索多条数据
         this.showScoList = this.scoreList
         this.total = res.data.length
+        this.loading = false
       } else {
+        this.loading = false
         this.getScoreList()
         return this.$message.error('请输入数据后再查询!')
       }
@@ -467,9 +484,11 @@ export default {
     },
     // 监听修改成绩对话框的点击事件
     async showEditDialog(scope) {
+      this.dialogLoading = true
       const { data: res } = await this.$http.get(
         `score/selectByStudentAndSubjectId?stuId=${scope.stuId}&subId=${scope.subId}`
       )
+      this.dialogLoading = false
       if (res.code !== 200) {
         return this.$message.error('查询成绩信息失败' + checkError(res))
       }
@@ -480,10 +499,12 @@ export default {
     addScore() {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的成绩信息后再提交')
+        this.dialogLoading = true
         const { data: res } = await this.$http.post(
           'score/insert',
           this.addForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.addDialogVisible = false
           return this.$message.error('添加成绩失败' + checkError(res))
@@ -502,10 +523,12 @@ export default {
           this.editDialogVisible = false
           return this.$message.warning('数据被锁定无法进行操作')
         }
+        this.dialogLoading = true
         const { data: res } = await this.$http.post(
           'score/update',
           this.editForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.editDialogVisible = false
           return this.$message.error('修改成绩失败' + checkError(res))

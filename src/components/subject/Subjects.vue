@@ -47,6 +47,7 @@
         :header-cell-style="{background:'#eef1f6',color:'#606266'}"
         border
         stripe
+        v-loading="loading"
       >
         <!--拓展列-->
         <el-table-column type="expand" label="详细" width="64px" align="center">
@@ -166,7 +167,7 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage"
+        :current-page.sync="currentPage"
         :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
@@ -179,6 +180,7 @@
       :visible.sync="addDialogVisible"
       width="50%"
       @close="addDialogClosed"
+      v-loading="dialogLoading"
     >
       <!--内容主题区域-->
       <el-form
@@ -220,6 +222,7 @@
       :visible.sync="editDialogVisible"
       width="50%"
       @close="editDialogClosed"
+      v-loading="dialogLoading"
     >
       <!--内容主题区域-->
       <el-form
@@ -266,6 +269,9 @@ export default {
   name: 'Subjects',
   data() {
     return {
+      // 开启加载
+      loading: true,
+      dialogLoading: true,
       // 路由url
       routeUrl: '/subjects',
       // 页面数据显示条数
@@ -302,7 +308,7 @@ export default {
       addFormRules: {
         subId: [
           { required: true, message: '请输入课程号', trigger: 'blur' },
-          { min: 3, max: 3, message: '课程号必须为3位数字', trigger: 'blur' }
+          { type: 'number', message: '课程号必须为数字', trigger: 'blur' }
         ],
         subName: [
           { required: true, message: '请输入课程名称', trigger: 'blur' },
@@ -310,7 +316,7 @@ export default {
         ],
         subTeacherId: [
           { required: true, message: '请输入教师用户名(ID)', trigger: 'blur' },
-          { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
+          { min: 2, max: 10, message: '长度为2到10个字符', trigger: 'blur' }
         ],
         subCredit: [
           { required: true, message: '请输入数字类型的课程学分', trigger: 'blur' }
@@ -323,7 +329,7 @@ export default {
         ],
         subTeacherId: [
           { required: true, message: '请输入教师用户名(ID)', trigger: 'blur' },
-          { min: 2, max: 4, message: '长度为2到4个中文汉字', trigger: 'blur' }
+          { min: 2, max: 10, message: '长度为2到10个字符', trigger: 'blur' }
         ],
         subCredit: [
           { required: true, message: '请输入数字类型的课程学分', trigger: 'blur' }
@@ -343,8 +349,10 @@ export default {
   methods: {
     // 获取课程列表
     async getSubjectList() {
+      this.loading = true
       const { data: res } = await this.$http.get('subject/selectAll')
       if (res.code !== 200) {
+        this.loading = false
         return this.$message.error('获取用户列表失败!' + checkError(res))
       }
       for (let i = 0; i < res.data.length; i++) {
@@ -359,13 +367,16 @@ export default {
         this.showSubList = sliceData(this.subjectList, this.currentPage, this.pageSize)
       }
       this.total = res.data.length
+      this.loading = false
     },
     // 查找课程
     async selectSubject() {
+      this.loading = true
       const { data: res } = await this.$http.get('subject/selectById', {
         params: this.queryInfo
       })
       if (res.code !== 200) {
+        this.loading = false
         return this.$message.error('获取课程列表失败!' + checkError(res))
       }
       this.subjectList = []
@@ -375,6 +386,7 @@ export default {
       // 定向搜索只可能查询到一条记录
       this.showSubList = this.subjectList
       this.total = res.data.length
+      this.loading = false
     },
     // 监听 switch 开关的改变
     async subjectStateChange(subjectInfo) {
@@ -422,15 +434,18 @@ export default {
       }
       this.editForm = res.data
       this.editDialogVisible = true
+      this.dialogLoading = false
     },
     // 点击按钮添加课程信息
     addSubject() {
       this.$refs.addFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的课程信息后再提交')
+        this.dialogLoading = true
         const { data: res } = await this.$http.post(
           'subject/insert',
           this.addForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.addDialogVisible = false
           return this.$message.error('添加课程失败' + checkError(res))
@@ -449,10 +464,12 @@ export default {
           this.editDialogVisible = false
           return this.$message.warning('数据被锁定无法进行操作')
         }
+        this.dialogLoading = true
         const { data: res } = await this.$http.post(
           'subject/update',
           this.editForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.editDialogVisible = false
           return this.$message.error('修改课程失败' + checkError(res))

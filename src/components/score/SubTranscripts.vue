@@ -197,6 +197,10 @@ export default {
       this.loadPic(subRes.data.subId)
       this.subjectList = []
       this.subjectList.push(subRes.data)
+      this.show = true
+      setTimeout(() => {
+        this.mainLoading = false
+      }, 1000)
       // 查询成绩信息
       const { data: scoRes } = await this.$http.get(
         'score/selectBySubjectId', {
@@ -212,10 +216,6 @@ export default {
         scoRes.data[i].stuEmail = (await this.selectEachStudent(scoRes.data[i].stuId)).stuEmail
       }
       this.scoreList = scoRes.data
-      this.show = true
-      setTimeout(() => {
-        this.mainLoading = false
-      }, 1000)
     },
     // 查询该课程每位学生的详细信息
     async selectEachStudent(stuId) {

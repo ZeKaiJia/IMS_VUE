@@ -32,6 +32,7 @@
         :header-cell-style="{background:'#eef1f6',color:'#606266'}"
         border
         stripe
+        v-loading="loading"
       >
         <el-table-column type="index" label="#" width="48px" align="center"/>
         <el-table-column label="权限名称" prop="name" align="center" width="148px"/>
@@ -68,7 +69,7 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage"
+        :current-page.sync="currentPage"
         :page-sizes="[1, 5, 7, 10, 30, 50, 100]"
         :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
@@ -81,6 +82,7 @@
       :visible.sync="editDialogVisible"
       width="50%"
       @close="editDialogClosed"
+      v-loading="dialogLoading"
     >
       <!--内容主题区域-->
       <el-form
@@ -129,6 +131,9 @@ export default {
   name: 'Rights',
   data() {
     return {
+      // 开启加载
+      loading: true,
+      dialogLoading: true,
       // 路由url
       routeUrl: '/rights',
       // 权限等级选项
@@ -182,8 +187,10 @@ export default {
   methods: {
     // 获取权限列表
     async getRightList () {
+      this.loading = true
       const { data: res } = await this.$http.get('permission/selectAllPermission')
       if (res.code !== 200) {
+        this.loading = false
         return this.$message.error('获取权限列表失败!' + checkError(res))
       }
       this.rightsList = res.data
@@ -193,6 +200,7 @@ export default {
         this.showRightsList = sliceData(this.rightsList, this.currentPage, this.pageSize)
       }
       this.total = res.data.length
+      this.loading = false
     },
     // 监听修改权限对话框的点击事件
     async showEditDialog(id) {
@@ -204,14 +212,17 @@ export default {
       }
       this.editForm = res.data
       this.editDialogVisible = true
+      this.dialogLoading = false
     },
     editPermission() {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return this.$message.error('请填写正确的权限信息后再提交')
+        this.dialogLoading = true
         const { data: res } = await this.$http.post(
           'permission/update',
           this.editForm
         )
+        this.dialogLoading = false
         if (res.code !== 200) {
           this.editDialogVisible = false
           return this.$message.error('修改权限失败' + checkError(res))
