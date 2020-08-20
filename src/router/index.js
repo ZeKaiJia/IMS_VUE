@@ -13,6 +13,7 @@ import StuTranscripts from '../components/score/StuTranscripts'
 import SubTranscripts from '../components/score/SubTranscripts'
 import Statuses from '../components/status/Statuses'
 import NotFound404 from '../components/NotFound404'
+import Docs from '../components/doc/Docs'
 import { getCookie } from '../plugins/utils'
 Vue.use(Router)
 
@@ -36,7 +37,8 @@ const router = new Router({
         { path: '/scores', component: Scores },
         { path: '/stuTranscripts', component: StuTranscripts },
         { path: '/subTranscripts', component: SubTranscripts },
-        { path: '/statuses', component: Statuses }
+        { path: '/statuses', component: Statuses },
+        { path: '/docs', component: Docs }
       ]
     }
   ]

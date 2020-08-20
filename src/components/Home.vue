@@ -146,6 +146,15 @@ export default {
             authName: '综合数据',
             path: 'statuses'
           }]
+        },
+        {
+          id: 7,
+          authName: '文档管理',
+          children: [{
+            id: 71,
+            authName: 'API文档',
+            path: 'docs'
+          }]
         }
       ],
       iconsObj: {
@@ -154,7 +163,8 @@ export default {
         3: 'iconfont icon-icon-test38',
         4: 'iconfont icon-icon-test9',
         5: 'iconfont icon-icon-test31',
-        6: 'iconfont icon-icon-test29'
+        6: 'iconfont icon-icon-test29',
+        7: 'iconfont icon-icon-test13'
       },
       // 默认不折叠
       isCollapse: false,

@@ -29,9 +29,9 @@
     </el-row>
     <el-card class="card">
       <el-row :gutter="20">
-          <el-col :span="6">
-            <div class="foot">快速入口:</div>
-          </el-col>
+        <el-col :span="6">
+          <div class="foot">快速入口:</div>
+        </el-col>
           <el-col :span="6">
             <el-link
               href="http://www.ky.zstu.edu.cn/index/xyxw.htm"
