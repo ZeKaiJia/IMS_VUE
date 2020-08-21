@@ -165,7 +165,7 @@ export default {
     position: relative;
   }
   .back {
-    background-image: url("http://s1.wailian.download/2020/07/27/school1.jpg");
+    background-image: url("../assets/img/school/school1.jpg");
     background-repeat: no-repeat;
     background-size: 100% 100%;
     background-position: center;

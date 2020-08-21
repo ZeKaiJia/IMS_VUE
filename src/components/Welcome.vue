@@ -63,14 +63,17 @@
 </template>
 
 <script>
+import school1 from '../assets/img/school/school1.jpg'
+import school2 from '../assets/img/school/school2.jpg'
+import school3 from '../assets/img/school/school3.jpg'
 export default {
   name: 'Welcome',
   data() {
     return {
       src: [
-        'http://s1.wailian.download/2020/07/27/school2.jpg',
-        'http://s1.wailian.download/2020/07/27/school3.jpg',
-        'http://s1.wailian.download/2020/07/27/school1.jpg'
+        school1,
+        school2,
+        school3
       ],
       loading: true
     }
