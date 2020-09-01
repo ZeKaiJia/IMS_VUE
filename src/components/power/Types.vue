@@ -225,7 +225,7 @@ export default {
     async generateManage(role) {
       this.manageValue = []
       this.manageData = []
-      const { data: enablePermissions } = await this.$http.get(`role/findPermissionByRole?role=${role}`)
+      const { data: enablePermissions } = await this.$http.get(`permission/findPermissionByRole?role=${role}`)
       const { data: allPermissions } = await this.$http.get('permission/selectAllPermission')
       if (allPermissions.code !== 200) {
         return this.$message.error('获取权限列表失败!' + checkError(allPermissions))

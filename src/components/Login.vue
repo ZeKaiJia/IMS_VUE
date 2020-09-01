@@ -8,7 +8,7 @@
       </div>
       <!--标题-->
       <div class="login-title">
-        <span>综合信息管理系统</span>
+        <span>基于前后端分离的教务平台后台管理系统</span>
       </div>
       <!--登录表单区-->
       <el-form
@@ -211,7 +211,7 @@ export default {
     .login-title {
       color: black;
       margin-top: 36px;
-      font-size: 40px;
+      font-size: 30px;
       font-weight: 200;
       text-align: center;
       span {

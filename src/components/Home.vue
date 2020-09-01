@@ -4,7 +4,7 @@
     <el-header>
       <div>
         <img style="margin-left: 10px" src="../assets/img/avater.png" alt="" />
-        <span style="cursor: default;">综合信息管理系统</span>
+        <span style="cursor: default;">基于前后端分离的教务平台后台管理系统</span>
       </div>
       <div>
         <span style="cursor: default">{{this.showUser}}</span>
@@ -28,7 +28,7 @@
           active-text-color="#38ae70"
           :router="true"
           :collapse="isCollapse"
-          :unique-opened="true"
+          :unique-opened="false"
           :collapse-transition="false"
           :default-active="activePath"
           :default-openeds="opened"
@@ -70,7 +70,7 @@
           <router-view />
         </el-main>
         <el-footer height="30px">
-          <div style="display: flex; justify-content: center; cursor: default">© 2020 · ims.cool 版权所有 · 浙ICP备20021194号-1
+          <div style="display: flex; justify-content: center; cursor: default">Copyright © 2020 · 浙江理工大学科技与艺术学院 版权所有 · 浙ICP备20021194号-1
             <img src="https://img.alicdn.com/tfs/TB1Z.avK.z1gK0jSZLeXXb9kVXa-200-200.png"
                  style="width: 24px; height: 24px; margin-top: 3px; margin-left: 8px"/>
           </div>
@@ -195,8 +195,14 @@ export default {
       const type = getCookie('type')
       if (type === 'teacher') {
         this.menuList = this.menuList.slice(2, 6)
+        this.menuList[2].children.splice(1, 1)
       } else if (type === 'student') {
         this.menuList = this.menuList.slice(3, 6)
+        this.menuList[1].children = this.menuList[1].children.slice(1, 2)
+      } else if (type === 'admin') {
+        const list1 = this.menuList.slice(0, 2)
+        const list2 = this.menuList.slice(5, 7)
+        this.menuList = list1.concat(list2)
       }
     },
     toggleCollapse() {
