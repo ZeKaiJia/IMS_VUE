@@ -25,8 +25,9 @@
           </el-input>
         </el-col>
         <el-col :span="2.5">
-          <el-button type="primary" @click="addDialogVisible = true"
-            >添加用户</el-button
+          <el-button type="primary" @click="showAddDialog()"
+          >添加用户
+          </el-button
           >
         </el-col>
         <el-col :span="1.5">
@@ -688,16 +689,20 @@ export default {
       this.editDialogVisible = true
       this.dialogLoading = false
     },
+    showAddDialog () {
+      this.addDialogVisible = true
+      this.dialogLoading = false
+    },
     // 当前页面显示数据条数改变事件
     // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pageSize = val
       // 根据当前页数和每页显示数控大小截取数据
       this.showUsrList = sliceData(this.userList, this.currentPage, this.pageSize)
     },
     // 页码改变事件
     // eslint-disable-next-line no-dupe-keys,vue/no-dupe-keys
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val
       // 根据当前页数和每页显示数控大小截取数据
       this.showUsrList = sliceData(this.userList, this.currentPage, this.pageSize)
