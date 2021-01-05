@@ -60,7 +60,7 @@
         label-width="100px"
       >
         <el-form-item label="名称" prop="role">
-          <el-input v-model="editForm.role" disabled/>
+          <el-input v-model="editForm.role"/>
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input v-model="editForm.description"/>

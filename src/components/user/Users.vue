@@ -384,7 +384,7 @@ export default {
       dialogLoading: true,
       // 路由url
       routeUrl: '/users',
-      // 角色类型选择
+      // 角色类型选择 TODO
       options: [{
         value: 'admin',
         label: '管理员'
@@ -521,8 +521,8 @@ export default {
     },
     // 获取用户角色
     async selectEachRole (usrName) {
-      const { data: res } = await this.$http.get(`role/findRoleByUserName?usrName=${usrName}`)
-      return easyChangeRoleName(res.data)
+      const { data: res } = await this.$http.get(`role/findRoleDesByUserName?usrName=${usrName}`)
+      return res.data
     },
     // 查找用户
     async selectUser() {
