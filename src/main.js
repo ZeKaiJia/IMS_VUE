@@ -50,7 +50,7 @@ axios.interceptors.response.use(
     if (accessToken && accessToken !== '') {
       localStorage.setItem('accessToken', accessToken)
     }
-    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1'
+    response.headers['Access-Control-Allow-Origin'] = '//127.0.0.1'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
   },
